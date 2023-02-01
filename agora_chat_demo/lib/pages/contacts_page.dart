@@ -1,3 +1,4 @@
+import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:flutter/widgets.dart';
 
 class ContactsPage extends StatefulWidget {
@@ -12,6 +13,9 @@ class ContactsPage extends StatefulWidget {
 class _ContactsPageState extends State<ContactsPage> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return ListView.builder(
+      itemCount: 1,
+      itemBuilder: (context, index) => const AgoraSwipeListTile(),
+    );
   }
 }
