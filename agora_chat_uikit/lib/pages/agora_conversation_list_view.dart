@@ -45,6 +45,7 @@ class AgoraConversationListViewState extends State<AgoraConversationListView> {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
+      cacheExtent: 50,
       itemCount: _convList.length,
       itemBuilder: ((context, index) {
         return widget.itemBuilder(context, index, _convList[index]);
