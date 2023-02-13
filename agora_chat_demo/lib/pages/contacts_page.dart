@@ -14,17 +14,38 @@ class _ContactsPageState extends State<ContactsPage> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemExtent: 50,
-      itemCount: 1,
-      itemBuilder: (context, index) => const AgoraSwipeWidget(
-        leftSwipeItems: [AgoraSwipeItem(color: Colors.red, text: "收藏")],
-        rightSwipeItems: [
-          AgoraSwipeItem(color: Colors.blue, text: "置顶"),
-          AgoraSwipeItem(color: Colors.red, text: "删除")
+      itemCount: 2,
+      itemBuilder: (context, index) => AgoraSwipeWidget(
+        index: index,
+        animationDuration: const Duration(seconds: 1),
+        enable: true,
+        leftSwipeItems: [
+          AgoraSwipeItem(
+            onTap: (index) => debugPrint("收藏： $index"),
+            backgroundColor: Colors.green,
+            text: "收藏",
+          )
         ],
-        child: ListTile(
-          title: Text("test123123213"),
-          trailing: Text("test123123213"),
+        rightSwipeItems: [
+          AgoraSwipeItem(
+            onTap: (index) => debugPrint("置顶： $index"),
+            backgroundColor: Colors.blue,
+            text: "置顶",
+          ),
+          AgoraSwipeItem(
+            onTap: (index) => debugPrint("删除： $index"),
+            backgroundColor: Colors.red,
+            text: "删除",
+          ),
+        ],
+        child: Container(
+          color: Colors.white,
+          child: ListTile(
+            onTap: () {},
+            title: const Text("test123123213"),
+            trailing: const Text("test123123213"),
+            subtitle: const Text("subTest"),
+          ),
         ),
       ),
     );

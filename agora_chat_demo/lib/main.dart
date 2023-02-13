@@ -31,6 +31,11 @@ class MyApp extends StatelessWidget {
       home: FutureBuilder<bool>(
         future: ChatClient.getInstance.isLoginBefore(),
         builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Container(
+              color: Colors.orange,
+            );
+          }
           if (snapshot.data == false) {
             return const LoginPage();
           } else {

@@ -9,6 +9,11 @@ typedef AgoraConversationItemWidgetBuilder = Widget Function(
   ChatConversation conversation,
 );
 
+typedef AgoraChatMessagePageBuilder = Widget Function(
+  BuildContext context,
+  ChatConversation conversation,
+);
+
 class AgoraConversationListView extends StatefulWidget {
   const AgoraConversationListView({
     super.key,
@@ -60,9 +65,11 @@ class AgoraConversationListViewState extends State<AgoraConversationListView> {
   void _loadAllConversations() {
     ChatClient.getInstance.chatManager.loadAllConversations().then((value) {
       debugPrint(value.length.toString());
-      setState(() {
-        _convList = value;
-      });
+      if (mounted) {
+        setState(() {
+          _convList = value;
+        });
+      }
 
       ChatClient.getInstance.chatManager
           .getUnreadMessageCount()

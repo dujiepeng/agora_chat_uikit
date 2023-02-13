@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../pages/agora_conversation_list_view.dart';
+
 class AgoraConversationListTile extends StatefulWidget {
   const AgoraConversationListTile.normal({
     super.key,
@@ -17,7 +19,7 @@ class AgoraConversationListTile extends StatefulWidget {
     this.textColor,
     this.contentPadding,
     this.enabled = true,
-    this.onTap,
+    this.onConversationTap,
     this.onLongPress,
     this.mouseCursor,
     this.selected = false,
@@ -49,7 +51,6 @@ class AgoraConversationListTile extends StatefulWidget {
     this.textColor,
     this.contentPadding,
     this.enabled = true,
-    this.onTap,
     this.onLongPress,
     this.mouseCursor,
     this.selected = false,
@@ -63,6 +64,7 @@ class AgoraConversationListTile extends StatefulWidget {
     this.horizontalTitleGap,
     this.minVerticalPadding,
     this.minLeadingWidth,
+    this.onConversationTap,
   });
 
   /// A widget to display before the title.
@@ -210,10 +212,7 @@ class AgoraConversationListTile extends StatefulWidget {
   /// inoperative.
   final bool enabled;
 
-  /// Called when the user taps this list tile.
-  ///
-  /// Inoperative if [enabled] is false.
-  final GestureTapCallback? onTap;
+  final AgoraChatMessagePageBuilder? onConversationTap;
 
   /// Called when the user long-presses on this list tile.
   ///
@@ -335,7 +334,7 @@ class _AgoraConversationListTileState extends State<AgoraConversationListTile> {
       textColor: widget.textColor,
       contentPadding: widget.contentPadding,
       enabled: widget.enabled,
-      onTap: widget.onTap,
+      onTap: null,
       onLongPress: widget.onLongPress,
       mouseCursor: widget.mouseCursor,
       selected: widget.selected,

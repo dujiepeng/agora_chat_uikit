@@ -40,26 +40,27 @@ class _ConversationsPageState extends State<ConversationsPage> {
           ChatConversation conversation,
         ) {
           return AgoraConversationListTile(
-            title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [Text("Title!"), Text("10:10:10")]),
-            subtitle: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                      child: Text(conversation.id,
-                          maxLines: 1, overflow: TextOverflow.ellipsis)),
-                  FutureBuilder<int>(
-                    future: conversation.unreadCount(),
-                    builder: (context, snapshot) {
-                      return AgoraUnreadCountWidget(
-                          unreadCount: snapshot.data ?? 0);
-                    },
-                  )
-                ]),
-            leading: Container(width: 40, height: 40, color: Colors.red),
-            onTap: () {},
-          );
+              title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const [Text("Title!"), Text("10:10:10")]),
+              subtitle: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                        child: Text(conversation.id,
+                            maxLines: 1, overflow: TextOverflow.ellipsis)),
+                    FutureBuilder<int>(
+                      future: conversation.unreadCount(),
+                      builder: (context, snapshot) {
+                        return AgoraUnreadCountWidget(
+                            unreadCount: snapshot.data ?? 0);
+                      },
+                    )
+                  ]),
+              leading: Container(width: 40, height: 40, color: Colors.red),
+              onConversationTap: (BuildContext context, ChatConversation conv) {
+                return Container();
+              });
         },
         onUnreadCountChanged: widget.onUnreadCountChanged,
       ),

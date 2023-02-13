@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   children: [
                     Image.asset(
-                      ImageLoader.getImg("Icon-log.png"),
+                      ImageLoader.getImg("icon_log.png"),
                       width: 144,
                     ),
                     const Text(
