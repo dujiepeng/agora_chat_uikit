@@ -1,9 +1,6 @@
-import 'dart:math';
-
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../controllers/agora_conversation_list_view_controller.dart';
 
@@ -149,7 +146,7 @@ class AgoraConversationListViewState extends State<AgoraConversationListView> {
                     child: Container(
                       color: Colors.white,
                       child: AgoraConversationListTile(
-                        key: Key(conversation.id),
+                        key: Key("list-${conversation.id}"),
                         leading: Container(
                           width: 50,
                           height: 50,
