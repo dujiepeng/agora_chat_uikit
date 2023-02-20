@@ -28,58 +28,53 @@ class AgoraConversationListTile extends StatefulWidget {
 }
 
 class AgoraConversationListTileState extends State<AgoraConversationListTile> {
-  ChatMessage? _msg;
-
-  updateMessage() async {
-    if (_msg == null) {
-      _msg = await widget.conversation.latestMessage();
-      setState(() {});
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    updateMessage();
-    return ListTile(
-      leading: widget.leading,
-      title: widget.title ??
-          Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.conversation.id,
-                  style: const TextStyle(fontSize: 17),
-                ),
-                Text(
-                  _msg?.createTs ?? "",
-                  style: const TextStyle(fontSize: 14),
+    return FutureBuilder(
+      future: widget.conversation.lastReceivedMessage(),
+      builder: (context, snapshot) {
+        ChatMessage? _msg;
+        if (snapshot.hasData) {
+          _msg = snapshot.data!;
+        }
+        return ListTile(
+          leading: widget.leading,
+          title: widget.title ??
+              Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      widget.conversation.id,
+                      style: const TextStyle(fontSize: 17),
+                    ),
+                    Text(
+                      _msg?.createTs ?? "",
+                      style: const TextStyle(fontSize: 14),
+                    )
+                  ]),
+          subtitle: widget.subtitle ??
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Expanded(child: Builder(
+                  builder: (context) {
+                    return Text(
+                      _msg?.summary ?? "",
+                      style: const TextStyle(fontSize: 14),
+                    );
+                  },
+                )),
+                FutureBuilder<int>(
+                  future: widget.conversation.unreadCount(),
+                  builder: (context, snapshot) {
+                    return AgoraUnreadCountWidget(
+                        unreadCount: snapshot.data ?? 0);
+                  },
                 )
               ]),
-      subtitle: widget.subtitle ??
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Expanded(child: Builder(
-              builder: (context) {
-                return Text(
-                  _msg?.summary ?? "",
-                  style: const TextStyle(fontSize: 14),
-                );
-              },
-            )),
-            FutureBuilder<int>(
-              future: widget.conversation.unreadCount(),
-              builder: (context, snapshot) {
-                return AgoraUnreadCountWidget(unreadCount: snapshot.data ?? 0);
-              },
-            )
-          ]),
-      trailing: widget.trailing,
-      onTap: () => widget.onTap?.call(widget.conversation),
+          trailing: widget.trailing,
+          onTap: () => widget.onTap?.call(widget.conversation),
+        );
+      },
     );
   }
 }
