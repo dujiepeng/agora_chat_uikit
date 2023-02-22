@@ -97,7 +97,7 @@ class _ConversationsPageState extends State<ConversationsPage> {
                               ),
                             ],
                           ),
-                        )
+                        ),
                       ]);
                 });
               },

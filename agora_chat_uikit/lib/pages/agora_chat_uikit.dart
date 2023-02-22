@@ -28,8 +28,13 @@ class AgoraChatUIKit extends StatefulWidget {
 
 class AgoraChatUIKitState extends State<AgoraChatUIKit> {
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     ChatClient.getInstance.startCallback();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return widget.child;
   }
 

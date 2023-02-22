@@ -19,8 +19,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    debugPrint("currentUser: ${ChatClient.getInstance.currentUserId}");
-
     return MaterialApp(
       title: 'AgoraChatDemo',
       theme: ThemeData.light(),
