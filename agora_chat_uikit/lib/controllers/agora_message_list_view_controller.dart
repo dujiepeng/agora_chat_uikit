@@ -1,1 +1,1 @@
-class AgoraMessagesWidgetController {}
+class AgoraMessageListViewController {}

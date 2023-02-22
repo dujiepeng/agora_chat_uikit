@@ -19,6 +19,10 @@ class AgoraSwipeGestureController {
       });
   }
 
+  void dispose() {
+    animationController.dispose();
+  }
+
   double leftDragDistance = 0;
   double rightDragDistance = 0;
 
@@ -35,6 +39,10 @@ class AgoraSwipeGestureController {
 
   void startMove(BuildContext context) {
     AgoraSwipeChangeNotification(this).dispatch(context);
+  }
+
+  void willClear(BuildContext context) {
+    AgoraSwipeControllerClearNotification(this).dispatch(context);
   }
 
   void scrollEnd(BuildContext context, {double speed = 0}) {

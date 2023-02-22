@@ -18,14 +18,12 @@ class AgoraSwipeWidget extends StatefulWidget {
     this.rightSwipeItems,
     this.enable = true,
     this.animationDuration = const Duration(milliseconds: 500),
-    required this.index,
     required this.child,
   });
 
   final List<AgoraSwipeItem>? leftSwipeItems;
   final List<AgoraSwipeItem>? rightSwipeItems;
   final Widget child;
-  final int index;
   final bool enable;
   final Duration animationDuration;
 
@@ -43,6 +41,7 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
   @override
   void initState() {
     super.initState();
+
     widget.leftSwipeItems?.forEach((element) {
       maxLeftDragDistance += element.itemWidth;
     });
@@ -61,17 +60,17 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
 
   @override
   void dispose() {
-    controller.animationController.dispose();
+    controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> leftWidgets = [];
+    final List<Widget> leftWidgets = [];
     widget.leftSwipeItems?.forEach((element) {
       leftWidgets.add(InkWell(
         onTap: () {
-          element.onTap?.call(widget.index);
+          element.onTap?.call();
           controller.close();
         },
         child: Container(
@@ -86,15 +85,14 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
       ));
     });
 
-    Widget leftWidget = leftWidgets.isNotEmpty
-        ? Row(children: leftWidgets)
-        : const Offstage();
+    Widget leftWidget =
+        leftWidgets.isNotEmpty ? Row(children: leftWidgets) : const Offstage();
 
-    List<Widget> rightWidgets = [];
+    final List<Widget> rightWidgets = [];
     widget.rightSwipeItems?.forEach((element) {
       rightWidgets.add(InkWell(
         onTap: () {
-          element.onTap?.call(widget.index);
+          element.onTap?.call();
           controller.close();
         },
         child: Container(

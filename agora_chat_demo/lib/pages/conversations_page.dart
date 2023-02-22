@@ -1,3 +1,4 @@
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 
 import 'package:flutter/material.dart';
@@ -12,6 +13,8 @@ class ConversationsPage extends StatefulWidget {
 }
 
 class _ConversationsPageState extends State<ConversationsPage> {
+  final AgoraConversationListViewController conversationListViewController =
+      AgoraConversationListViewController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +26,7 @@ class _ConversationsPageState extends State<ConversationsPage> {
                 fontSize: 25, fontWeight: FontWeight.w900, color: Colors.blue)),
         actions: [
           TextButton(
-              onPressed: () {
+              onPressed: () async {
                 setState(() {
                   showMenu(
                       shape: RoundedRectangleBorder(
@@ -32,8 +35,70 @@ class _ConversationsPageState extends State<ConversationsPage> {
                       context: context,
                       elevation: 1,
                       color: Colors.black,
-                      position: const RelativeRect.fromLTRB(0, 120, -10, 0),
-                      items: getPopupMenuItems());
+                      position: const RelativeRect.fromLTRB(0, 70, -1, 0),
+                      items: [
+                        PopupMenuItem(
+                          onTap: () async {
+                            conversationListViewController
+                                .loadAllConversations();
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const <Widget>[
+                              Icon(
+                                Icons.contact_mail,
+                                color: Colors.white,
+                              ),
+                              Text(
+                                "刷新列表",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          onTap: () async {
+                            ChatConversation? a = await ChatClient
+                                .getInstance.chatManager
+                                .getConversation("du100");
+                            conversationListViewController.conversationList = [
+                              a!
+                            ];
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const <Widget>[
+                              Icon(
+                                Icons.contact_mail,
+                                color: Colors.white,
+                              ),
+                              Text(
+                                "插入一项",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          onTap: () async {
+                            conversationListViewController
+                                .deleteAllConversations();
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const <Widget>[
+                              Icon(
+                                Icons.contact_mail,
+                                color: Colors.white,
+                              ),
+                              Text(
+                                "清空列表",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        )
+                      ]);
                 });
               },
               child: const Icon(
@@ -44,12 +109,8 @@ class _ConversationsPageState extends State<ConversationsPage> {
         ],
       ),
       body: AgoraConversationListView(
+        conversationListController: conversationListViewController,
         onUnreadCountChanged: widget.onUnreadCountChanged,
-        separatorBuilder: (context, index) {
-          return const Divider(
-            height: 0.02,
-          );
-        },
         onTap: (conversation) {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) {
@@ -61,36 +122,5 @@ class _ConversationsPageState extends State<ConversationsPage> {
         },
       ),
     );
-  }
-
-  final List _appBarData = [
-    {"icon_codePoint": 0xe66c, "tag": "添加好友", "color": Colors.white},
-    {"icon_codePoint": 0xe611, "tag": "扫一扫", "color": Colors.white},
-    {"icon_codePoint": 0xe64d, "tag": "收付款", "color": Colors.white},
-    {"icon_codePoint": 0xe60d, "tag": "帮助与反馈", "color": Colors.white}
-  ];
-  List<PopupMenuItem> getPopupMenuItems() {
-    return _appBarData.map((item) {
-      return PopupMenuItem(
-          child: Row(
-        children: <Widget>[
-          SizedBox(
-            width: 30,
-            height: 30,
-            child: Icon(
-              IconData(item['icon_codePoint'], fontFamily: 'AppBarIcons'),
-              color: item['color'],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
-            child: Text(
-              item['tag'],
-              style: const TextStyle(color: Colors.white),
-            ),
-          )
-        ],
-      ));
-    }).toList();
   }
 }

@@ -1,7 +1,14 @@
-import 'package:flutter/widgets.dart';
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:flutter/material.dart';
+
+import '../controllers/agora_message_list_view_controller.dart';
 
 class AgoraMessageListView extends StatefulWidget {
-  const AgoraMessageListView({super.key});
+  const AgoraMessageListView(
+      {super.key, required this.conversation, this.messageListViewController});
+
+  final ChatConversation conversation;
+  final AgoraMessageListViewController? messageListViewController;
 
   @override
   State<AgoraMessageListView> createState() => _AgoraMessageListViewState();
@@ -10,6 +17,8 @@ class AgoraMessageListView extends StatefulWidget {
 class _AgoraMessageListViewState extends State<AgoraMessageListView> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.conversation.id)),
+    );
   }
 }

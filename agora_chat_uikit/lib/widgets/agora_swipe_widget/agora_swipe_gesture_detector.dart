@@ -49,6 +49,12 @@ class _AgoraSwipeGestureDetectorState extends State<AgoraSwipeGestureDetector> {
     widget.controller.startMove(context);
   }
 
+  @override
+  void dispose() {
+    widget.controller.willClear(context);
+    super.dispose();
+  }
+
   void _horizontalDragUpdate(DragUpdateDetails details) {
     widget.controller.setDx(details.delta.dx);
   }

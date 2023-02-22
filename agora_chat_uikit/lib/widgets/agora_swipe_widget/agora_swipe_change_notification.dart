@@ -6,3 +6,8 @@ class AgoraSwipeChangeNotification extends Notification {
   AgoraSwipeChangeNotification(this.controller);
   final AgoraSwipeGestureController? controller;
 }
+
+class AgoraSwipeControllerClearNotification extends Notification {
+  AgoraSwipeControllerClearNotification(this.controller);
+  final AgoraSwipeGestureController? controller;
+}

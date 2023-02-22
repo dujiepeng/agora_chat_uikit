@@ -16,8 +16,25 @@ class AgoraSwipeAutoCloseBehavior extends StatefulWidget {
 class _AgoraSwipeAutoCloseBehaviorState
     extends State<AgoraSwipeAutoCloseBehavior> {
   AgoraSwipeGestureController? _lastController;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    Widget content =
+        NotificationListener<AgoraSwipeControllerClearNotification>(
+      onNotification: (notification) {
+        if (_lastController == notification.controller) {
+          _lastController = null;
+        }
+        return true;
+      },
+      child: widget.child,
+    );
+
     return NotificationListener<AgoraSwipeChangeNotification>(
       onNotification: (notification) {
         if (_lastController != null &&
@@ -27,13 +44,12 @@ class _AgoraSwipeAutoCloseBehaviorState
         _lastController = notification.controller;
         return true;
       },
-      child: widget.child,
+      child: content,
     );
   }
 
   @override
   void didUpdateWidget(covariant AgoraSwipeAutoCloseBehavior oldWidget) {
-    _lastController = null;
     super.didUpdateWidget(oldWidget);
   }
 

@@ -51,6 +51,7 @@ class AgoraSwipeScrollingCloseBehaviorState
   }
 
   void handleScrollingChanged() {
+    widget.controller?.willClear(context);
     widget.controller?.close();
   }
 }
