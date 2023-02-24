@@ -17,8 +17,6 @@ class AgoraMessageListView extends StatefulWidget {
 class _AgoraMessageListViewState extends State<AgoraMessageListView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.conversation.id)),
-    );
+    return Container();
   }
 }

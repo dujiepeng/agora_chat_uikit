@@ -37,7 +37,7 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
 
   double maxLeftDragDistance = 0;
   double maxRightDragDistance = 0;
-
+  bool dismissed = false;
   @override
   void initState() {
     super.initState();
@@ -69,10 +69,7 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
     final List<Widget> leftWidgets = [];
     widget.leftSwipeItems?.forEach((element) {
       leftWidgets.add(InkWell(
-        onTap: () {
-          element.onTap?.call();
-          controller.close();
-        },
+        onTap: () => onTapAction(element),
         child: Container(
           alignment: Alignment.center,
           width: element.itemWidth,
@@ -91,10 +88,7 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
     final List<Widget> rightWidgets = [];
     widget.rightSwipeItems?.forEach((element) {
       rightWidgets.add(InkWell(
-        onTap: () {
-          element.onTap?.call();
-          controller.close();
-        },
+        onTap: () => onTapAction(element),
         child: Container(
           width: element.itemWidth,
           alignment: Alignment.center,
@@ -107,36 +101,75 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
       ));
     });
 
+    controller.dismissAnimationController.addStatusListener((status) {
+      if (status == AnimationStatus.forward) {
+        dismissed = true;
+        setState(() {});
+      }
+    });
     Widget rightWidget = rightWidgets.isNotEmpty
         ? Row(children: rightWidgets)
         : const Offstage();
+    final slideAnimation = controller.dismissAnimationController.view
+        .drive(CurveTween(curve: Curves.easeOutCirc))
+        .drive(Tween<Offset>(begin: Offset.zero, end: const Offset(1.0, 0.0)));
 
-    return WillPopScope(
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [leftWidget, rightWidget],
+    Widget content = SlideTransition(
+      textDirection: TextDirection.rtl,
+      position: slideAnimation,
+      child: WillPopScope(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [leftWidget, rightWidget],
+              ),
             ),
-          ),
-          AgoraSwipeGestureDetector(
-            enable: widget.enable,
-            controller: controller,
-            child: AgoraSwipeScrollingCloseBehavior(
+            AgoraSwipeGestureDetector(
+              enable: widget.enable,
               controller: controller,
-              child: widget.child,
+              child: AgoraSwipeScrollingCloseBehavior(
+                controller: controller,
+                child: widget.child,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
+        onWillPop: () async {
+          if (controller.dxNotifier.value != 0) {
+            controller.scrollEnd(context);
+            return false;
+          }
+          return true;
+        },
       ),
-      onWillPop: () async {
-        if (controller.dxNotifier.value != 0) {
-          controller.scrollEnd(context);
-          return false;
-        }
-        return true;
-      },
     );
+
+    if (dismissed) {
+      final sizeAnimation = controller.sizeAnimationController.view
+          .drive(CurveTween(curve: Curves.easeOutCirc))
+          .drive(Tween(begin: 1.0, end: 0.0));
+      content = SizeTransition(
+        axis: Axis.vertical,
+        sizeFactor: sizeAnimation,
+        child: content,
+      );
+    }
+
+    return content;
+  }
+
+  void onTapAction(AgoraSwipeItem item) async {
+    AgoraSwipeItemAction confirmAction = AgoraSwipeItemAction.close;
+    if (item.confirmAction != null) {
+      confirmAction = await item.confirmAction?.call() ?? confirmAction;
+    }
+    if (confirmAction == AgoraSwipeItemAction.close) {
+      await controller.close();
+    } else {
+      await controller.dismiss();
+    }
+    item.didAction?.call(confirmAction);
   }
 }

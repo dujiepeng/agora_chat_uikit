@@ -149,12 +149,47 @@ class AgoraConversationListViewState extends State<AgoraConversationListView> {
                           key: ValueKey(conversation.id),
                           rightSwipeItems: [
                             AgoraSwipeItem(
-                                onTap: () async {
-                                  await controller.deleteConversationWithId(
-                                      conversation.id);
-                                },
-                                backgroundColor: Colors.red,
-                                text: "删除")
+                              didAction: (AgoraSwipeItemAction action) async {
+                                if (action == AgoraSwipeItemAction.dismiss) {
+                                  {
+                                    await controller.deleteConversationWithId(
+                                        conversation.id);
+                                  }
+                                }
+                              },
+                              backgroundColor: Colors.red,
+                              text: "删除",
+                              confirmAction: () async {
+                                return await showDialog<AgoraSwipeItemAction>(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: const Text('Are you sure?'),
+                                          content: const Text(
+                                              'Are you sure to dismiss?'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop(
+                                                    AgoraSwipeItemAction
+                                                        .dismiss);
+                                              },
+                                              child: const Text('Yes'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop(
+                                                    AgoraSwipeItemAction.close);
+                                              },
+                                              child: const Text('No'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ) ??
+                                    AgoraSwipeItemAction.close;
+                              },
+                            ),
                           ],
                           child: Container(
                             color: Colors.white,

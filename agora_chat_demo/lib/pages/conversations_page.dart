@@ -124,3 +124,24 @@ class _ConversationsPageState extends State<ConversationsPage> {
     );
   }
 }
+
+class TextWidget extends StatefulWidget {
+  const TextWidget(this.text, {super.key});
+
+  final String text;
+  @override
+  State<StatefulWidget> createState() => _TextWidgetState();
+}
+
+class _TextWidgetState extends State<TextWidget> {
+  @override
+  void initState() {
+    debugPrint("run initState");
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(widget.text);
+  }
+}

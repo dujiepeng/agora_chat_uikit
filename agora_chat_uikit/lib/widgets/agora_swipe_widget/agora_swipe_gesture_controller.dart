@@ -7,30 +7,44 @@ class AgoraSwipeGestureController {
     TickerProvider vsync, {
     this.leftDragDistance = 0,
     this.rightDragDistance = 0,
-    Duration duration = const Duration(milliseconds: 500),
+    Duration duration = const Duration(milliseconds: 200),
   }) {
-    animationController = AnimationController(
-        upperBound: leftDragDistance,
-        lowerBound: -rightDragDistance,
-        vsync: vsync,
-        duration: duration)
-      ..addListener(() {
-        dxNotifier.value = animationController.value;
+    gestureAnimationController = AnimationController(
+      upperBound: leftDragDistance,
+      lowerBound: -rightDragDistance,
+      vsync: vsync,
+      duration: duration,
+    )..addListener(() {
+        dxNotifier.value = gestureAnimationController.value;
       });
+
+    dismissAnimationController = AnimationController(
+        vsync: vsync, duration: const Duration(milliseconds: 300));
+
+    sizeAnimationController = AnimationController(
+        vsync: vsync, duration: const Duration(milliseconds: 500));
   }
 
-  void dispose() {
-    animationController.dispose();
-  }
+  late AnimationController gestureAnimationController;
+  late AnimationController dismissAnimationController;
+  late AnimationController sizeAnimationController;
 
   double leftDragDistance = 0;
   double rightDragDistance = 0;
-
-  late AnimationController animationController;
-
-  final Map<Type, GestureRecognizerFactory> gestures =
-      <Type, GestureRecognizerFactory>{};
   ValueNotifier<double> dxNotifier = ValueNotifier(0);
+
+  void dispose() {
+    _cleanAnimController();
+  }
+
+  void _cleanAnimController() {
+    gestureAnimationController.stop();
+    gestureAnimationController.dispose();
+    dismissAnimationController.stop();
+    dismissAnimationController.dispose();
+    sizeAnimationController.stop();
+    sizeAnimationController.dispose();
+  }
 
   void setDx(double dx) {
     dxNotifier.value =
@@ -45,25 +59,38 @@ class AgoraSwipeGestureController {
     AgoraSwipeControllerClearNotification(this).dispatch(context);
   }
 
-  void scrollEnd(BuildContext context, {double speed = 0}) {
-    animationController.value = dxNotifier.value;
+  void scrollEnd(BuildContext context, {double speed = 0}) async {
+    gestureAnimationController.value = dxNotifier.value;
     double target = 0.0;
 
-    if (animationController.value > leftDragDistance / 2) {
+    if (dxNotifier.value > leftDragDistance / 2) {
       target = leftDragDistance;
-    } else if (animationController.value < -rightDragDistance / 2) {
+    } else if (dxNotifier.value < -rightDragDistance / 2) {
       target = -rightDragDistance;
     }
-    if (target == animationController.value) return;
-    animationController.animateBack(target, curve: Curves.linear);
+
+    if (target == gestureAnimationController.value) return;
+    debugPrint("value: --- > $target");
+    await gestureAnimationController.animateBack(
+      target,
+      curve: Curves.easeOut,
+    );
   }
 
-  void close() {
+  Future<void> close() async {
     if (dxNotifier.value == 0) {
       return;
     }
 
-    animationController.value = dxNotifier.value;
-    animationController.animateBack(0, curve: Curves.ease);
+    debugPrint("close run!");
+    await gestureAnimationController.animateBack(
+      0,
+      curve: Curves.ease,
+    );
+  }
+
+  Future<void> dismiss() async {
+    await dismissAnimationController.forward();
+    await sizeAnimationController.forward();
   }
 }

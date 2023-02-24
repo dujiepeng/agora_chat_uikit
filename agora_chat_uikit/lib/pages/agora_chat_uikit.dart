@@ -27,16 +27,21 @@ class AgoraChatUIKit extends StatefulWidget {
 }
 
 class AgoraChatUIKitState extends State<AgoraChatUIKit> {
+  String? _userId;
+
   @override
   void initState() {
     super.initState();
     ChatClient.getInstance.startCallback();
+    _userId = ChatClient.getInstance.currentUserId;
   }
 
   @override
   Widget build(BuildContext context) {
     return widget.child;
   }
+
+  String? get current => _userId;
 
   void reloadAllConversations() {
     AgoraConversationListView.of(context).loadAllConversations();
