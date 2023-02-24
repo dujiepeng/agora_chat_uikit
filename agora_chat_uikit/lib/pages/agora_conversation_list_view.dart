@@ -190,6 +190,7 @@ class AgoraConversationListViewState extends State<AgoraConversationListView> {
                                     AgoraSwipeItemAction.close;
                               },
                             ),
+                            // AgoraSwipeItem(text: "test"),
                           ],
                           child: Container(
                             color: Colors.white,

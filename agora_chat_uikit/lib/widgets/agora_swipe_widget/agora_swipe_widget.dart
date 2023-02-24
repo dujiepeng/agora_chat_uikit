@@ -33,7 +33,7 @@ class AgoraSwipeWidget extends StatefulWidget {
 
 class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
     with TickerProviderStateMixin {
-  late final AgoraSwipeGestureController controller;
+  AgoraSwipeGestureController? controller;
 
   double maxLeftDragDistance = 0;
   double maxRightDragDistance = 0;
@@ -41,6 +41,12 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
   @override
   void initState() {
     super.initState();
+    updateItem();
+  }
+
+  updateItem() {
+    maxLeftDragDistance = 0;
+    maxRightDragDistance = 0;
 
     widget.leftSwipeItems?.forEach((element) {
       maxLeftDragDistance += element.itemWidth;
@@ -49,6 +55,10 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
     widget.rightSwipeItems?.forEach((element) {
       maxRightDragDistance += element.itemWidth;
     });
+
+    if (controller != null) {
+      controller?.dispose();
+    }
 
     controller = AgoraSwipeGestureController(
       this,
@@ -59,8 +69,14 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
   }
 
   @override
+  void didUpdateWidget(covariant AgoraSwipeWidget oldWidget) {
+    updateItem();
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   void dispose() {
-    controller.dispose();
+    controller?.dispose();
     super.dispose();
   }
 
@@ -101,7 +117,7 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
       ));
     });
 
-    controller.dismissAnimationController.addStatusListener((status) {
+    controller!.dismissAnimationController.addStatusListener((status) {
       if (status == AnimationStatus.forward) {
         dismissed = true;
         setState(() {});
@@ -110,7 +126,7 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
     Widget rightWidget = rightWidgets.isNotEmpty
         ? Row(children: rightWidgets)
         : const Offstage();
-    final slideAnimation = controller.dismissAnimationController.view
+    final slideAnimation = controller!.dismissAnimationController.view
         .drive(CurveTween(curve: Curves.easeOutCirc))
         .drive(Tween<Offset>(begin: Offset.zero, end: const Offset(1.0, 0.0)));
 
@@ -128,7 +144,7 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
             ),
             AgoraSwipeGestureDetector(
               enable: widget.enable,
-              controller: controller,
+              controller: controller!,
               child: AgoraSwipeScrollingCloseBehavior(
                 controller: controller,
                 child: widget.child,
@@ -137,8 +153,8 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
           ],
         ),
         onWillPop: () async {
-          if (controller.dxNotifier.value != 0) {
-            controller.scrollEnd(context);
+          if (controller!.dxNotifier.value != 0) {
+            controller!.scrollEnd(context);
             return false;
           }
           return true;
@@ -147,7 +163,7 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
     );
 
     if (dismissed) {
-      final sizeAnimation = controller.sizeAnimationController.view
+      final sizeAnimation = controller!.sizeAnimationController.view
           .drive(CurveTween(curve: Curves.easeOutCirc))
           .drive(Tween(begin: 1.0, end: 0.0));
       content = SizeTransition(
@@ -166,9 +182,9 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
       confirmAction = await item.confirmAction?.call() ?? confirmAction;
     }
     if (confirmAction == AgoraSwipeItemAction.close) {
-      await controller.close();
+      await controller?.close();
     } else {
-      await controller.dismiss();
+      await controller?.dismiss();
     }
     item.didAction?.call(confirmAction);
   }

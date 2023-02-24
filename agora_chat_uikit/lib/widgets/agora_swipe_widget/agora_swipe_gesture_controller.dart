@@ -70,7 +70,7 @@ class AgoraSwipeGestureController {
     }
 
     if (target == gestureAnimationController.value) return;
-    debugPrint("value: --- > $target");
+
     await gestureAnimationController.animateBack(
       target,
       curve: Curves.easeOut,
@@ -82,7 +82,6 @@ class AgoraSwipeGestureController {
       return;
     }
 
-    debugPrint("close run!");
     await gestureAnimationController.animateBack(
       0,
       curve: Curves.ease,
