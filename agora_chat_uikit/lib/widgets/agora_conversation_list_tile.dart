@@ -2,19 +2,19 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/tools/agora_extension.dart';
 import 'package:flutter/material.dart';
 
-import 'agora_unread_count_widget.dart';
+import 'agora_badge_widget.dart';
 
 class AgoraConversationListTile extends StatelessWidget {
   const AgoraConversationListTile(
       {super.key,
       required this.conversation,
-      this.leading,
+      this.avatar,
       this.title,
       this.subtitle,
       this.trailing,
       this.onTap});
 
-  final Widget? leading;
+  final Widget? avatar;
   final Widget? title;
   final Widget? subtitle;
   final Widget? trailing;
@@ -32,7 +32,7 @@ class AgoraConversationListTile extends StatelessWidget {
           msg = snapshot.data!;
         }
         return ListTile(
-          leading: leading,
+          leading: avatar,
           title: title ??
               Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,8 +60,9 @@ class AgoraConversationListTile extends StatelessWidget {
                 FutureBuilder<int>(
                   future: conversation.unreadCount(),
                   builder: (context, snapshot) {
-                    return AgoraUnreadCountWidget(
-                        unreadCount: snapshot.data ?? 0);
+                    return AgoraBadgeWidget(
+                      unreadCount: snapshot.data ?? 0,
+                    );
                   },
                 )
               ]),

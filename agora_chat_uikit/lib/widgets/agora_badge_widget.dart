@@ -1,7 +1,8 @@
+import 'package:agora_chat_uikit/agora_chat_uikit_theme.dart';
 import 'package:flutter/material.dart';
 
-class AgoraUnreadCountWidget extends StatelessWidget {
-  const AgoraUnreadCountWidget({
+class AgoraBadgeWidget extends StatelessWidget {
+  const AgoraBadgeWidget({
     super.key,
     required this.unreadCount,
     this.maxCount = 99,
@@ -17,9 +18,9 @@ class AgoraUnreadCountWidget extends StatelessWidget {
           return const Offstage();
         } else if (unreadCount < 0) {
           return Container(
-            decoration: const BoxDecoration(
-                color: Color.fromRGBO(255, 20, 204, 1),
-                borderRadius: BorderRadius.all(Radius.circular(30))),
+            decoration: BoxDecoration(
+                color: Theme.of(context).agoraBadgeColor,
+                borderRadius: const BorderRadius.all(Radius.circular(30))),
             width: 10,
             height: 10,
           );
@@ -30,18 +31,15 @@ class AgoraUnreadCountWidget extends StatelessWidget {
           }
           return Container(
             decoration: BoxDecoration(
-                color: const Color.fromRGBO(255, 20, 204, 1),
+                color: Theme.of(context).agoraBadgeColor,
                 border: Border.all(
-                  color: Colors.white,
-                  width: 2.0,
+                  color: Theme.of(context).agoraBadgeBorderColor,
+                  width: Theme.of(context).agoraBadgeBorderWidth,
                 ),
                 borderRadius: const BorderRadius.all(Radius.circular(30))),
             padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
             child: Text(
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-              ),
+              style: Theme.of(context).agoraBadgeTextTheme,
               unreadStr,
             ),
           );

@@ -179,7 +179,7 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
   void onTapAction(AgoraSwipeItem item) async {
     AgoraSwipeItemAction confirmAction = AgoraSwipeItemAction.close;
     if (item.confirmAction != null) {
-      confirmAction = await item.confirmAction?.call() ?? confirmAction;
+      confirmAction = await item.confirmAction?.call(context) ?? confirmAction;
     }
     if (confirmAction == AgoraSwipeItemAction.close) {
       await controller?.close();

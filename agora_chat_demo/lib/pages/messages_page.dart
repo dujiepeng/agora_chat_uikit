@@ -1,6 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:agora_chat_uikit/controllers/agora_message_list_view_controller.dart';
-import 'package:agora_chat_uikit/pages/agora_message_list_view.dart';
+import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:flutter/material.dart';
 
 class MessagePage extends StatefulWidget {
@@ -17,9 +16,13 @@ class MessagePage extends StatefulWidget {
 class _MessagePageState extends State<MessagePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold( 
+    return Scaffold(
       appBar: AppBar(
-        title: Text(widget.conversation.id),
+        shadowColor: Theme.of(context).appBarShadowColor,
+        backgroundColor: Theme.of(context).appBarBackgroundColor,
+        title: Text(
+          widget.conversation.id,
+        ),
       ),
       body: AgoraMessageListView(
         key: const Key("messageList"),

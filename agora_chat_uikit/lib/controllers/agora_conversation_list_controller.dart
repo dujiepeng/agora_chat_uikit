@@ -1,13 +1,17 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
 import 'package:flutter/widgets.dart';
+import 'agora_base_controller.dart';
 
 typedef AgoraConversationSortHandle = Future<List<ChatConversation>> Function(
     List<ChatConversation> beforeList);
 
-class AgoraConversationListViewController {
-  AgoraConversationListViewController({this.sortHandle}) {
-    addListener();
+class AgoraConversationListController extends AgoraBaseController {
+  AgoraConversationListController({
+    super.key,
+    this.sortHandle,
+  }) {
+    _addListener();
     loadAllConversations();
   }
 
@@ -22,6 +26,7 @@ class AgoraConversationListViewController {
 
   final ValueNotifier<List<ChatConversation>> _listValueNotifier =
       ValueNotifier([]);
+  final ValueNotifier<int> _totalUnreadCountNotifier = ValueNotifier(0);
 
   Future<void> deleteConversationWithId(String id) async {
     List<ChatConversation> list = conversationList;
@@ -33,32 +38,48 @@ class AgoraConversationListViewController {
     }
   }
 
-  void deleteAllConversations() async {
+  void deleteAllConversations({bool includeMessage = true}) async {
     List<ChatConversation> list = conversationList;
-    await Future.wait(list.map((element) =>
-            ChatClient.getInstance.chatManager.deleteConversation(element.id)))
-        .then((value) => conversationList = []);
+    await Future.wait(list
+        .map((element) => ChatClient.getInstance.chatManager.deleteConversation(
+              element.id,
+              deleteMessages: includeMessage,
+            ))).then((value) => conversationList = []);
+    if (includeMessage) {
+      _totalUnreadCountNotifier.value = 0;
+    }
   }
 
-  List<ChatConversation> get conversationList {
-    return _listValueNotifier.value;
-  }
+  List<ChatConversation> get conversationList => _listValueNotifier.value;
+  int get totalUnreadCount => _totalUnreadCountNotifier.value;
 
   set conversationList(List<ChatConversation> list) {
     _listValueNotifier.value = List.from(list);
+
+    ChatClient.getInstance.chatManager
+        .getUnreadMessageCount()
+        .then((value) => _totalUnreadCountNotifier.value = value);
   }
 
-  void registerNotifier(VoidCallback function) {
+  void addListListener(VoidCallback function) {
     _listValueNotifier.addListener(function);
   }
 
-  void unregisterNotifier(VoidCallback function) {
+  void removeListListener(VoidCallback function) {
     _listValueNotifier.removeListener(function);
   }
 
-  void addListener() {
+  void addTotalUnreadCountListener(VoidCallback function) {
+    _totalUnreadCountNotifier.addListener(function);
+  }
+
+  void removeTotalUnreadCountListener(VoidCallback function) {
+    _totalUnreadCountNotifier.removeListener(function);
+  }
+
+  void _addListener() {
     ChatClient.getInstance.chatManager.addEventHandler(
-      "conversationListController",
+      key,
       ChatEventHandler(
         onMessagesReceived: (messages) async {
           loadAllConversations();
@@ -68,7 +89,6 @@ class AgoraConversationListViewController {
   }
 
   void dispose() {
-    ChatClient.getInstance.chatManager
-        .removeEventHandler("conversationListController");
+    ChatClient.getInstance.chatManager.removeEventHandler(key);
   }
 }

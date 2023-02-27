@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-typedef ConfirmDismissCallback = Future<AgoraSwipeItemAction> Function();
+typedef ConfirmDismissCallback = Future<AgoraSwipeItemAction> Function(
+    BuildContext context);
 
 enum AgoraSwipeItemAction { close, dismiss }
 

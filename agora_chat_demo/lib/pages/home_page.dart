@@ -86,7 +86,7 @@ class _HomePageState extends State<HomePage>
               top: unreadCount < 0 ? 0 : null,
               left: unreadCount > 0 ? 20 : null,
               bottom: unreadCount > 0 ? 15 : null,
-              child: AgoraUnreadCountWidget(
+              child: AgoraBadgeWidget(
                 unreadCount: unreadCount,
               ),
             ),

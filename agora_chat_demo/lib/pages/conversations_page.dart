@@ -3,8 +3,6 @@ import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 
 import 'package:flutter/material.dart';
 
-import 'messages_page.dart';
-
 class ConversationsPage extends StatefulWidget {
   const ConversationsPage({super.key, this.onUnreadCountChanged});
   final void Function(int)? onUnreadCountChanged;
@@ -13,14 +11,38 @@ class ConversationsPage extends StatefulWidget {
 }
 
 class _ConversationsPageState extends State<ConversationsPage> {
-  final AgoraConversationListViewController conversationListViewController =
-      AgoraConversationListViewController();
+  final AgoraConversationListController conversationListController =
+      AgoraConversationListController();
+
+  @override
+  void initState() {
+    super.initState();
+    conversationListController.addTotalUnreadCountListener(unreadCountChange);
+  }
+
+  @override
+  void dispose() {
+    conversationListController
+        .removeTotalUnreadCountListener(unreadCountChange);
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant ConversationsPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
+
+  void unreadCountChange() {
+    widget.onUnreadCountChanged
+        ?.call(conversationListController.totalUnreadCount);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        shadowColor: Colors.transparent,
-        backgroundColor: Colors.transparent,
+        shadowColor: Theme.of(context).appBarShadowColor,
+        backgroundColor: Theme.of(context).appBarBackgroundColor,
         title: const Text('Chats',
             style: TextStyle(
                 fontSize: 25, fontWeight: FontWeight.w900, color: Colors.blue)),
@@ -39,8 +61,7 @@ class _ConversationsPageState extends State<ConversationsPage> {
                       items: [
                         PopupMenuItem(
                           onTap: () async {
-                            conversationListViewController
-                                .loadAllConversations();
+                            conversationListController.loadAllConversations();
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -61,9 +82,7 @@ class _ConversationsPageState extends State<ConversationsPage> {
                             ChatConversation? a = await ChatClient
                                 .getInstance.chatManager
                                 .getConversation("du100");
-                            conversationListViewController.conversationList = [
-                              a!
-                            ];
+                            conversationListController.conversationList = [a!];
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -81,8 +100,7 @@ class _ConversationsPageState extends State<ConversationsPage> {
                         ),
                         PopupMenuItem(
                           onTap: () async {
-                            conversationListViewController
-                                .deleteAllConversations();
+                            conversationListController.deleteAllConversations();
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -109,39 +127,17 @@ class _ConversationsPageState extends State<ConversationsPage> {
         ],
       ),
       body: AgoraConversationListView(
-        conversationListController: conversationListViewController,
-        onUnreadCountChanged: widget.onUnreadCountChanged,
-        onTap: (conversation) {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) {
-              return MessagePage(
-                conversation: conversation,
-              );
-            },
-          ));
-        },
+        conversationListController: conversationListController,
+        // onItemTap: (conversation) {
+        //   Navigator.of(context).push(MaterialPageRoute(
+        //     builder: (context) {
+        //       return MessagePage(
+        //         conversation: conversation,
+        //       );
+        //     },
+        //   ));
+        // },
       ),
     );
-  }
-}
-
-class TextWidget extends StatefulWidget {
-  const TextWidget(this.text, {super.key});
-
-  final String text;
-  @override
-  State<StatefulWidget> createState() => _TextWidgetState();
-}
-
-class _TextWidgetState extends State<TextWidget> {
-  @override
-  void initState() {
-    debugPrint("run initState");
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(widget.text);
   }
 }
