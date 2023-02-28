@@ -1,5 +1,7 @@
-import 'package:agora_chat_uikit/widgets/agora_emoji_widget.dart';
+import 'package:agora_chat_uikit/widgets/agora_message_input_widget/agora_emoji_data.dart';
 import 'package:flutter/material.dart';
+
+import 'agora_emoji_widget.dart';
 
 class AgoraMessageInputWidget extends StatefulWidget {
   const AgoraMessageInputWidget({
@@ -8,11 +10,19 @@ class AgoraMessageInputWidget extends StatefulWidget {
     this.recordStart,
     this.recordCancel,
     this.recordDone,
+    this.enableEmoji = true,
+    this.enableVoice = true,
+    this.enableMore = true,
+    this.hiddenStr = "请输入消息",
   });
   final String? inputTextStr;
   final VoidCallback? recordStart;
   final VoidCallback? recordCancel;
   final VoidCallback? recordDone;
+  final bool enableEmoji;
+  final bool enableVoice;
+  final bool enableMore;
+  final String hiddenStr;
   @override
   State<AgoraMessageInputWidget> createState() =>
       _AgoraMessageInputWidgetState();
@@ -59,25 +69,28 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(3, 3, 10, 4),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      InkWell(
-                          child: Container(
-                            width: 35,
-                            height: 35,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: _currentInputType == AgoraInputType.voice
-                                  ? Colors.blue
-                                  : Colors.red,
+                  child: Offstage(
+                    offstage: !widget.enableVoice,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        InkWell(
+                            child: Container(
+                              width: 35,
+                              height: 35,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: _currentInputType == AgoraInputType.voice
+                                    ? Colors.blue
+                                    : Colors.red,
+                              ),
                             ),
-                          ),
-                          onTap: () {
-                            _updateCurrentInputType(AgoraInputType.voice);
-                          }),
-                    ],
+                            onTap: () {
+                              _updateCurrentInputType(AgoraInputType.voice);
+                            }),
+                      ],
+                    ),
                   ),
                 ),
                 Expanded(
@@ -88,21 +101,24 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
                   return _currentInputType != AgoraInputType.voice
                       ? Padding(
                           padding: const EdgeInsets.fromLTRB(10, 3, 4, 4),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              InkWell(
-                                child: Container(
-                                  width: 35,
-                                  height: 35,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Colors.red,
+                          child: Offstage(
+                            offstage: !widget.enableMore,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                InkWell(
+                                  child: Container(
+                                    width: 35,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Colors.red,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         )
                       : Container();
@@ -120,7 +136,7 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
   }
 
   void _updateCurrentInputType(AgoraInputType type) {
-    if (type == _currentInputType) {
+    if (type == _currentInputType && _lastInputType != null) {
       _currentInputType = _lastInputType!;
     } else {
       _lastInputType = _currentInputType;
@@ -143,13 +159,13 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
               focusNode: _inputFocusNode,
               controller: textEditingController,
               maxLines: null,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 prefixText: " ",
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.fromLTRB(10, 10, 0, 10),
+                contentPadding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
                 isCollapsed: true,
-                hintText: "请输入信息",
-                hintStyle: TextStyle(
+                hintText: widget.hiddenStr,
+                hintStyle: const TextStyle(
                   fontSize: 16,
                   color: Colors.grey,
                 ),
@@ -161,27 +177,30 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(3, 3, 4, 4),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                InkWell(
-                  onTap: () async {
-                    _inputFocusNode.unfocus();
-                    _updateCurrentInputType(AgoraInputType.emoji);
-                  },
-                  child: Container(
-                    width: 35,
-                    height: 35,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: _currentInputType == AgoraInputType.emoji
-                          ? Colors.blue
-                          : Colors.red,
+            child: Offstage(
+              offstage: !widget.enableEmoji,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  InkWell(
+                    onTap: () async {
+                      _inputFocusNode.unfocus();
+                      _updateCurrentInputType(AgoraInputType.emoji);
+                    },
+                    child: Container(
+                      width: 35,
+                      height: 35,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: _currentInputType == AgoraInputType.emoji
+                            ? Colors.blue
+                            : Colors.red,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -226,13 +245,71 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
             height: 200,
             child: Stack(
               children: [
-                const Positioned(
-                  child: AgoraEmojiWidget(),
+                Positioned(
+                  child: AgoraEmojiWidget(
+                    emojiClicked: (p0) {
+                      TextEditingValue value = textEditingController.value;
+                      int current = value.selection.baseOffset;
+                      String text = value.text;
+                      text = text.substring(0, current) +
+                          p0 +
+                          text.substring(current);
+                      textEditingController.value = value.copyWith(
+                        text: text,
+                        selection: TextSelection.fromPosition(
+                          TextPosition(
+                            affinity: TextAffinity.downstream,
+                            offset: current + 2,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
                 Positioned(
                   bottom: 30,
                   right: 30,
                   child: InkWell(
+                    onTap: () {
+                      TextEditingValue value = textEditingController.value;
+                      int current = value.selection.baseOffset;
+                      String mStr = "";
+                      int offset = 0;
+                      do {
+                        if (current == 0) {
+                          return;
+                        }
+                        if (current == 1) {
+                          mStr = value.text.substring(1);
+                          break;
+                        }
+
+                        if (current >= 2) {
+                          String subText =
+                              value.text.substring(current - 2, current);
+                          if (AgoraEmojiData.emojiList.contains(subText)) {
+                            mStr = value.text.substring(0, current - 2) +
+                                value.text.substring(current);
+                            offset = current - 2;
+                            break;
+                          } else {
+                            mStr = value.text.substring(0, current - 1) +
+                                value.text.substring(current);
+                            offset = current - 1;
+                            break;
+                          }
+                        }
+                      } while (false);
+                      textEditingController.value = value.copyWith(
+                        text: mStr,
+                        selection: TextSelection.fromPosition(
+                          TextPosition(
+                            affinity: TextAffinity.downstream,
+                            offset: offset,
+                          ),
+                        ),
+                      );
+                    },
                     child: Container(
                       width: 40,
                       height: 40,

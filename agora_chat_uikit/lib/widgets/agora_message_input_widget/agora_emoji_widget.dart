@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'agora_emoji_data.dart';
 
-typedef EmojiClick = void Function(Widget);
+typedef EmojiClick = void Function(String);
 
 class AgoraEmojiWidget extends StatelessWidget {
   final int crossAxisCount;
@@ -43,20 +43,20 @@ class AgoraEmojiWidget extends StatelessWidget {
   }
 
   _getEmojiItemContainer(int index) {
-    var emojiIndex = AgoraEmojiData.emojiList[index];
-    return AgoraExpression(emojiIndex, bigSizeRatio, emojiClicked);
+    var emoji = AgoraEmojiData.emojiList[index];
+    return AgoraExpression(emoji, bigSizeRatio, emojiClicked);
   }
 }
 
 class AgoraExpression extends StatelessWidget {
-  final int emojiIndex;
+  final String emoji;
 
   final double bigSizeRatio;
 
   final EmojiClick? emojiClicked;
 
   const AgoraExpression(
-    this.emojiIndex,
+    this.emoji,
     this.bigSizeRatio,
     this.emojiClicked, {
     super.key,
@@ -64,7 +64,10 @@ class AgoraExpression extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget icon = Icon(IconData(emojiIndex));
+    Widget icon = Text(
+      emoji,
+      style: const TextStyle(fontSize: 30),
+    ); //Icon(IconData(emojiIndex));
     return TextButton(
       style: ButtonStyle(
         padding: MaterialStateProperty.all(
@@ -72,7 +75,7 @@ class AgoraExpression extends StatelessWidget {
         ),
       ),
       onPressed: () {
-        emojiClicked?.call(icon);
+        emojiClicked?.call(emoji);
       },
       child: icon,
     );
