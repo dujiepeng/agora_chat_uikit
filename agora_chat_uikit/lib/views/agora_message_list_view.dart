@@ -22,10 +22,6 @@ class AgoraMessageListViewController {
     action?.onScrollEnd();
   }
 
-  void moveToBegin() {
-    action?.onScrollBegin();
-  }
-
   void dispose() {
     action = null;
   }
@@ -34,10 +30,8 @@ class AgoraMessageListViewController {
 class AgoraMessageListActions {
   const AgoraMessageListActions({
     required this.onScrollEnd,
-    required this.onScrollBegin,
   });
   final VoidCallback onScrollEnd;
-  final VoidCallback onScrollBegin;
 }
 
 class AgoraMessageListView extends StatefulWidget {
@@ -85,9 +79,6 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView> {
 
     widget.messageListViewController._addListener(AgoraMessageListActions(
       onScrollEnd: _scrollToEnd,
-      onScrollBegin: () {
-        debugPrint("scroll begin");
-      },
     ));
   }
 
@@ -96,6 +87,11 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView> {
       _scrollController.animateTo(_scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 200), curve: Curves.linear);
     });
+  }
+
+  void _scrollToBegin() {
+    _scrollController.animateTo(0,
+        duration: const Duration(milliseconds: 200), curve: Curves.linear);
   }
 
   @override

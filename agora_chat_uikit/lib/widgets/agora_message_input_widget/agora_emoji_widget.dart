@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'agora_emoji_data.dart';
 
-typedef EmojiClick = void Function(String);
+typedef EmojiClick = void Function(String emoji);
 
 class AgoraEmojiWidget extends StatelessWidget {
   final int crossAxisCount;

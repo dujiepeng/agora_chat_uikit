@@ -45,9 +45,7 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
     super.initState();
     textEditingController = TextEditingController(
       text: widget.inputTextStr,
-    )..addListener(() {
-        widget.textFieldOnChanged?.call(textEditingController.text);
-      });
+    );
     _inputFocusNode.addListener(() {
       if (_inputFocusNode.hasFocus) {
         _updateCurrentInputType(_AgoraInputType.text);
@@ -172,6 +170,9 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
         children: [
           Expanded(
             child: TextField(
+              onTap: () {
+                widget.textFieldOnChanged?.call(textEditingController.text);
+              },
               focusNode: _inputFocusNode,
               controller: textEditingController,
               maxLines: null,
@@ -257,19 +258,23 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
 
   Widget _faceWidget() {
     return AnimatedContainer(
+      onEnd: () {
+        widget.textFieldOnChanged?.call(textEditingController.text);
+      },
       curve: Curves.easeOut,
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 300),
       height: _currentInputType == _AgoraInputType.emoji ? 200 : 0,
       child: Stack(
         children: [
           Positioned(
             child: AgoraEmojiWidget(
-              emojiClicked: (p0) {
+              emojiClicked: (emoji) {
                 TextEditingValue value = textEditingController.value;
                 int current = value.selection.baseOffset;
                 String text = value.text;
-                text =
-                    text.substring(0, current) + p0 + text.substring(current);
+                text = text.substring(0, current) +
+                    emoji +
+                    text.substring(current);
                 textEditingController.value = value.copyWith(
                   text: text,
                   selection: TextSelection.fromPosition(
