@@ -67,81 +67,77 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 140, minHeight: 50),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(3, 3, 10, 4),
-                  child: Offstage(
-                    offstage: !widget.enableVoice,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        InkWell(
-                            child: Container(
-                              width: 35,
-                              height: 35,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color:
-                                    _currentInputType == _AgoraInputType.voice
-                                        ? Colors.blue
-                                        : Colors.red,
-                              ),
-                            ),
-                            onTap: () {
-                              _updateCurrentInputType(_AgoraInputType.voice);
-                            }),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                    child: _currentInputType != _AgoraInputType.voice
-                        ? _inputWidget()
-                        : _voiceWidget()),
-                () {
-                  return _currentInputType != _AgoraInputType.voice
-                      ? Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 3, 4, 4),
-                          child: Offstage(
-                            offstage: !widget.enableMore,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    _inputFocusNode.unfocus();
-                                    widget.moreAction?.call();
-                                    _updateCurrentInputType(
-                                        _AgoraInputType.dismiss);
-                                  },
-                                  child: Container(
-                                    width: 35,
-                                    height: 35,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: _currentInputType ==
-                                              _AgoraInputType.more
-                                          ? Colors.blue
-                                          : Colors.red,
-                                    ),
-                                  ),
-                                ),
-                              ],
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(3, 3, 10, 4),
+                child: Offstage(
+                  offstage: !widget.enableVoice,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      InkWell(
+                          child: Container(
+                            width: 35,
+                            height: 35,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: _currentInputType == _AgoraInputType.voice
+                                  ? Colors.blue
+                                  : Colors.red,
                             ),
                           ),
-                        )
-                      : Container();
-                }(),
-              ],
-            ),
+                          onTap: () {
+                            _updateCurrentInputType(_AgoraInputType.voice);
+                          }),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                  child: _currentInputType != _AgoraInputType.voice
+                      ? _inputWidget()
+                      : _voiceWidget()),
+              () {
+                return _currentInputType != _AgoraInputType.voice
+                    ? Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 3, 4, 4),
+                        child: Offstage(
+                          offstage: !widget.enableMore,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  _inputFocusNode.unfocus();
+                                  widget.moreAction?.call();
+                                  _updateCurrentInputType(
+                                      _AgoraInputType.dismiss);
+                                },
+                                child: Container(
+                                  width: 35,
+                                  height: 35,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: _currentInputType ==
+                                            _AgoraInputType.more
+                                        ? Colors.blue
+                                        : Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : Container();
+              }(),
+            ],
           ),
         ),
         _faceWidget(),
@@ -166,6 +162,7 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
 
   Widget _inputWidget() {
     return Container(
+      constraints: const BoxConstraints(maxHeight: 150, minHeight: 40),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.grey, width: 0.5),
