@@ -153,7 +153,7 @@ class AgoraConversationListViewState extends State<AgoraConversationListView> {
                                     context: context,
                                     builder: (context) {
                                       return SizedBox(
-                                        height: 300,
+                                        height: 250,
                                         child: Column(
                                           mainAxisSize: MainAxisSize.max,
                                           children: [
@@ -232,7 +232,7 @@ class AgoraConversationListViewState extends State<AgoraConversationListView> {
                 },
                 childCount: _tmpList.length,
               ),
-              cacheExtent: widget.cacheExtent,
+              cacheExtent: widget.cacheExtent ?? 2000,
               dragStartBehavior: widget.dragStartBehavior,
               keyboardDismissBehavior: widget.keyboardDismissBehavior,
               restorationId: widget.restorationId,

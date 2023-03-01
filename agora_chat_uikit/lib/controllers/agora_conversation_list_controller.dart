@@ -18,7 +18,6 @@ class AgoraConversationListController extends AgoraBaseController {
   final AgoraConversationSortHandle? sortHandle;
 
   void loadAllConversations() async {
-    debugPrint(ChatClient.getInstance.currentUserId);
     List<ChatConversation> list =
         await ChatClient.getInstance.chatManager.loadAllConversations();
     conversationList = await sortHandle?.call(list) ?? list;

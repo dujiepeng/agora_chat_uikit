@@ -23,9 +23,9 @@ class _ContactsPageState extends State<ContactsPage> {
     return Center(
       child: ElevatedButton(
           onPressed: () async {
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < 11; i++) {
               ChatMessage msg = ChatMessage.createTxtSendMessage(
-                  targetId: i.toString(), content: "hello");
+                  targetId: "15", content: i.toString());
               await ChatClient.getInstance.chatManager.sendMessage(msg);
             }
           },

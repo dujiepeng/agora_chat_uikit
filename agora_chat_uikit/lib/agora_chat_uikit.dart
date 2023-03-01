@@ -8,7 +8,6 @@ export 'agora_chat_uikit_theme.dart';
 export 'controllers/agora_chat_uikit_controller.dart';
 export 'controllers/agora_conversation_list_controller.dart';
 export 'controllers/agora_contact_list_view_controller.dart';
-export 'controllers/agora_message_list_view_controller.dart';
 
 export 'generated/agora_chat_uikit_localizations.dart';
 

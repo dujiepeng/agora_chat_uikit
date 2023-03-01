@@ -10,15 +10,19 @@ class AgoraMessageInputWidget extends StatefulWidget {
     this.recordStart,
     this.recordCancel,
     this.recordDone,
+    this.moreAction,
     this.enableEmoji = true,
     this.enableVoice = true,
     this.enableMore = true,
     this.hiddenStr = "请输入消息",
+    this.textFieldOnChanged,
   });
   final String? inputTextStr;
   final VoidCallback? recordStart;
   final VoidCallback? recordCancel;
   final VoidCallback? recordDone;
+  final VoidCallback? moreAction;
+  final void Function(String text)? textFieldOnChanged;
   final bool enableEmoji;
   final bool enableVoice;
   final bool enableMore;
@@ -30,21 +34,23 @@ class AgoraMessageInputWidget extends StatefulWidget {
 
 class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
   late TextEditingController textEditingController;
-  AgoraInputType _currentInputType = AgoraInputType.text;
-  AgoraInputType? _lastInputType;
+  _AgoraInputType _currentInputType = _AgoraInputType.dismiss;
+  _AgoraInputType? _lastInputType;
 
   final FocusNode _inputFocusNode = FocusNode();
   final GlobalKey _gestureKey = GlobalKey();
-  AgoraVoiceOffsetType _voiceTouchType = AgoraVoiceOffsetType.noTouch;
+  _AgoraVoiceOffsetType _voiceTouchType = _AgoraVoiceOffsetType.noTouch;
   @override
   void initState() {
     super.initState();
     textEditingController = TextEditingController(
       text: widget.inputTextStr,
-    );
+    )..addListener(() {
+        widget.textFieldOnChanged?.call(textEditingController.text);
+      });
     _inputFocusNode.addListener(() {
       if (_inputFocusNode.hasFocus) {
-        _updateCurrentInputType(AgoraInputType.text);
+        _updateCurrentInputType(_AgoraInputType.text);
       }
     });
   }
@@ -59,11 +65,12 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         ConstrainedBox(
           constraints: const BoxConstraints(maxHeight: 140, minHeight: 50),
           child: Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -81,24 +88,25 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
                               height: 35,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
-                                color: _currentInputType == AgoraInputType.voice
-                                    ? Colors.blue
-                                    : Colors.red,
+                                color:
+                                    _currentInputType == _AgoraInputType.voice
+                                        ? Colors.blue
+                                        : Colors.red,
                               ),
                             ),
                             onTap: () {
-                              _updateCurrentInputType(AgoraInputType.voice);
+                              _updateCurrentInputType(_AgoraInputType.voice);
                             }),
                       ],
                     ),
                   ),
                 ),
                 Expanded(
-                    child: _currentInputType != AgoraInputType.voice
+                    child: _currentInputType != _AgoraInputType.voice
                         ? _inputWidget()
                         : _voiceWidget()),
                 () {
-                  return _currentInputType != AgoraInputType.voice
+                  return _currentInputType != _AgoraInputType.voice
                       ? Padding(
                           padding: const EdgeInsets.fromLTRB(10, 3, 4, 4),
                           child: Offstage(
@@ -108,12 +116,21 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 InkWell(
+                                  onTap: () {
+                                    _inputFocusNode.unfocus();
+                                    widget.moreAction?.call();
+                                    _updateCurrentInputType(
+                                        _AgoraInputType.dismiss);
+                                  },
                                   child: Container(
                                     width: 35,
                                     height: 35,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20),
-                                      color: Colors.red,
+                                      color: _currentInputType ==
+                                              _AgoraInputType.more
+                                          ? Colors.blue
+                                          : Colors.red,
                                     ),
                                   ),
                                 ),
@@ -123,9 +140,6 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
                         )
                       : Container();
                 }(),
-                const SizedBox(
-                  width: 5,
-                ),
               ],
             ),
           ),
@@ -135,9 +149,14 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
     );
   }
 
-  void _updateCurrentInputType(AgoraInputType type) {
+  void _updateCurrentInputType(_AgoraInputType type) {
     if (type == _currentInputType && _lastInputType != null) {
-      _currentInputType = _lastInputType!;
+      if (_currentInputType == _lastInputType!) {
+        _currentInputType = _AgoraInputType.text;
+      } else {
+        _currentInputType = _AgoraInputType.text;
+      }
+      _lastInputType = null;
     } else {
       _lastInputType = _currentInputType;
       _currentInputType = type;
@@ -186,14 +205,14 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
                   InkWell(
                     onTap: () async {
                       _inputFocusNode.unfocus();
-                      _updateCurrentInputType(AgoraInputType.emoji);
+                      _updateCurrentInputType(_AgoraInputType.emoji);
                     },
                     child: Container(
                       width: 35,
                       height: 35,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: _currentInputType == AgoraInputType.emoji
+                        color: _currentInputType == _AgoraInputType.emoji
                             ? Colors.blue
                             : Colors.red,
                       ),
@@ -209,26 +228,26 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
   }
 
   Widget _voiceWidget() {
-    return Listener(
-      behavior: HitTestBehavior.opaque,
-      onPointerDown: _onPointerDown,
-      onPointerMove: _onPointerMove,
-      onPointerUp: _onPointerUp,
-      child: Container(
-        key: _gestureKey,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: const Color.fromARGB(255, 230, 230, 230)),
-        height: 44,
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: const Color.fromARGB(255, 230, 230, 230)),
+      height: 44,
+      key: _gestureKey,
+      child: Listener(
+        behavior: HitTestBehavior.opaque,
+        onPointerDown: _onPointerDown,
+        onPointerMove: _onPointerMove,
+        onPointerUp: _onPointerUp,
         child: Center(
           child: Text(
             () {
               switch (_voiceTouchType) {
-                case AgoraVoiceOffsetType.noTouch:
+                case _AgoraVoiceOffsetType.noTouch:
                   return "Hold to Talk";
-                case AgoraVoiceOffsetType.dragInside:
+                case _AgoraVoiceOffsetType.dragInside:
                   return "Release to send";
-                case AgoraVoiceOffsetType.dragOutside:
+                case _AgoraVoiceOffsetType.dragOutside:
                   return "Release to cancel";
               }
             }(),
@@ -240,94 +259,92 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
   }
 
   Widget _faceWidget() {
-    return _currentInputType == AgoraInputType.emoji
-        ? SizedBox(
-            height: 200,
-            child: Stack(
-              children: [
-                Positioned(
-                  child: AgoraEmojiWidget(
-                    emojiClicked: (p0) {
-                      TextEditingValue value = textEditingController.value;
-                      int current = value.selection.baseOffset;
-                      String text = value.text;
-                      text = text.substring(0, current) +
-                          p0 +
-                          text.substring(current);
-                      textEditingController.value = value.copyWith(
-                        text: text,
-                        selection: TextSelection.fromPosition(
-                          TextPosition(
-                            affinity: TextAffinity.downstream,
-                            offset: current + 2,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Positioned(
-                  bottom: 30,
-                  right: 30,
-                  child: InkWell(
-                    onTap: () {
-                      TextEditingValue value = textEditingController.value;
-                      int current = value.selection.baseOffset;
-                      String mStr = "";
-                      int offset = 0;
-                      do {
-                        if (current == 0) {
-                          return;
-                        }
-                        if (current == 1) {
-                          mStr = value.text.substring(1);
-                          break;
-                        }
-
-                        if (current >= 2) {
-                          String subText =
-                              value.text.substring(current - 2, current);
-                          if (AgoraEmojiData.emojiList.contains(subText)) {
-                            mStr = value.text.substring(0, current - 2) +
-                                value.text.substring(current);
-                            offset = current - 2;
-                            break;
-                          } else {
-                            mStr = value.text.substring(0, current - 1) +
-                                value.text.substring(current);
-                            offset = current - 1;
-                            break;
-                          }
-                        }
-                      } while (false);
-                      textEditingController.value = value.copyWith(
-                        text: mStr,
-                        selection: TextSelection.fromPosition(
-                          TextPosition(
-                            affinity: TextAffinity.downstream,
-                            offset: offset,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.blue,
-                      ),
+    return AnimatedContainer(
+      curve: Curves.easeOut,
+      duration: const Duration(milliseconds: 200),
+      height: _currentInputType == _AgoraInputType.emoji ? 200 : 0,
+      child: Stack(
+        children: [
+          Positioned(
+            child: AgoraEmojiWidget(
+              emojiClicked: (p0) {
+                TextEditingValue value = textEditingController.value;
+                int current = value.selection.baseOffset;
+                String text = value.text;
+                text =
+                    text.substring(0, current) + p0 + text.substring(current);
+                textEditingController.value = value.copyWith(
+                  text: text,
+                  selection: TextSelection.fromPosition(
+                    TextPosition(
+                      affinity: TextAffinity.downstream,
+                      offset: current + 2,
                     ),
                   ),
-                ),
-              ],
+                );
+              },
             ),
-          )
-        : Container();
+          ),
+          Positioned(
+            bottom: 30,
+            right: 30,
+            child: InkWell(
+              onTap: () {
+                TextEditingValue value = textEditingController.value;
+                int current = value.selection.baseOffset;
+                String mStr = "";
+                int offset = 0;
+                do {
+                  if (current == 0) {
+                    return;
+                  }
+                  if (current == 1) {
+                    mStr = value.text.substring(1);
+                    break;
+                  }
+
+                  if (current >= 2) {
+                    String subText = value.text.substring(current - 2, current);
+                    if (AgoraEmojiData.emojiList.contains(subText)) {
+                      mStr = value.text.substring(0, current - 2) +
+                          value.text.substring(current);
+                      offset = current - 2;
+                      break;
+                    } else {
+                      mStr = value.text.substring(0, current - 1) +
+                          value.text.substring(current);
+                      offset = current - 1;
+                      break;
+                    }
+                  }
+                } while (false);
+                textEditingController.value = value.copyWith(
+                  text: mStr,
+                  selection: TextSelection.fromPosition(
+                    TextPosition(
+                      affinity: TextAffinity.downstream,
+                      offset: offset,
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.blue,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   _onPointerDown(PointerDownEvent event) {
-    setState(() => _voiceTouchType = AgoraVoiceOffsetType.dragInside);
+    setState(() => _voiceTouchType = _AgoraVoiceOffsetType.dragInside);
   }
 
   _onPointerMove(PointerMoveEvent event) {
@@ -341,11 +358,11 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
         renderBox.size.height - offset.dy < 0) {
       outside = true;
     }
-    AgoraVoiceOffsetType type = AgoraVoiceOffsetType.noTouch;
+    _AgoraVoiceOffsetType type = _AgoraVoiceOffsetType.noTouch;
     if (!outside) {
-      type = AgoraVoiceOffsetType.dragInside;
+      type = _AgoraVoiceOffsetType.dragInside;
     } else {
-      type = AgoraVoiceOffsetType.dragOutside;
+      type = _AgoraVoiceOffsetType.dragOutside;
     }
     if (_voiceTouchType != type) {
       setState(() => _voiceTouchType = type);
@@ -366,14 +383,10 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
 
     if (!outside) {
     } else {}
-    setState(() => _voiceTouchType = AgoraVoiceOffsetType.noTouch);
+    setState(() => _voiceTouchType = _AgoraVoiceOffsetType.noTouch);
   }
 }
 
-enum AgoraInputType { text, voice, emoji }
+enum _AgoraInputType { dismiss, text, voice, emoji, more }
 
-enum AgoraVoiceOffsetType {
-  noTouch,
-  dragInside,
-  dragOutside,
-}
+enum _AgoraVoiceOffsetType { noTouch, dragInside, dragOutside }

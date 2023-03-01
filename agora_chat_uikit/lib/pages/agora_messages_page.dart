@@ -30,6 +30,7 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: widget.appBar ??
           AppBar(
             titleSpacing: 0,
@@ -66,13 +67,89 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
             Expanded(
               child: AgoraMessageListView(
                 conversation: widget.conversation,
-                messageListViewController: msgListViewController,
+                controller: msgListViewController,
               ),
             ),
-            widget.inputBar ?? const AgoraMessageInputWidget()
+            widget.inputBar ??
+                AgoraMessageInputWidget(
+                  moreAction: showMoreItems,
+                  textFieldOnChanged: (text) {
+                    msgListViewController.moveToEnd();
+                  },
+                )
           ],
         ),
       ),
+    );
+  }
+
+  void showMoreItems() {
+    showModalBottomSheet(
+      elevation: 50,
+      context: context,
+      builder: (context) {
+        return SizedBox(
+          height: 250,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              const Divider(height: 10),
+              InkWell(
+                child: Container(
+                    margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 245, 245, 245),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "Camera",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
+                    )),
+                onTap: () => {},
+              ),
+              InkWell(
+                child: Container(
+                    margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 245, 245, 245),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "Album",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
+                    )),
+                onTap: () => {},
+              ),
+              InkWell(
+                child: Container(
+                    margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 245, 245, 245),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "Files",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
+                    )),
+                onTap: () => {},
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
