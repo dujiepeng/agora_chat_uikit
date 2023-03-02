@@ -26,16 +26,16 @@ class AgoraMessageListViewController extends AgoraBaseController {
             int index = -1;
             do {
               index = _newList.indexWhere((element) => msgId == element.msgId);
-              if (index > 0) {
+              if (index > -1) {
                 _newList[index] = msg;
                 break;
               }
               index = _oldList.indexWhere((element) => msgId == element.msgId);
-              if (index > 0) {
-                _newList[index] = msg;
+              if (index > -1) {
+                _oldList[index] = msg;
               }
-            } while (true);
-            if (index > 0) {
+            } while (false);
+            if (index > -1) {
               reloadData();
             }
           },
@@ -44,9 +44,7 @@ class AgoraMessageListViewController extends AgoraBaseController {
     ChatClient.getInstance.chatManager.addEventHandler(
         key,
         ChatEventHandler(
-          onGroupMessageRead: (groupMessageAcks) {},
-          onMessagesRead: (messages) {},
-          onMessagesRecalled: (messages) {},
+          onMessagesRead: _updateMessageItems,
           onMessagesReceived: (messages) {
             List<ChatMessage> tmp = messages
                 .where((element) => element.conversationId == conversation.id)
@@ -54,13 +52,32 @@ class AgoraMessageListViewController extends AgoraBaseController {
             _newList.addAll(tmp);
             reloadData();
           },
-          onMessagesDelivered: (messages) {},
-          onMessageReactionDidChange: (events) {},
-          onCmdMessagesReceived: (messages) {},
-          onConversationRead: (from, to) {},
-          onConversationsUpdate: () {},
-          onReadAckForGroupMessageUpdated: () {},
+          // onMessagesDelivered: _updateMessageItems,
         ));
+  }
+
+  void _updateMessageItems(List<ChatMessage> list) {
+    bool hasChange = false;
+
+    for (var item in list) {
+      int index = -1;
+      do {
+        index = _newList.indexWhere((element) => item.msgId == element.msgId);
+        if (index > -1) {
+          _newList[index] = item;
+          hasChange = true;
+          break;
+        }
+        index = _oldList.indexWhere((element) => item.msgId == element.msgId);
+        if (index > -1) {
+          _oldList[index] = item;
+        }
+        hasChange = true;
+      } while (false);
+    }
+    if (hasChange) {
+      reloadData();
+    }
   }
 
   void _remoteChatManagerListener() {
