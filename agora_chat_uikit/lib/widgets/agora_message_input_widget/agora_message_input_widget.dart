@@ -1,4 +1,4 @@
-import 'package:agora_chat_uikit/widgets/agora_message_input_widget/agora_emoji_data.dart';
+import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:flutter/material.dart';
 
 import 'agora_emoji_widget.dart';

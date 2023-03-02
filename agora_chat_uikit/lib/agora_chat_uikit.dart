@@ -4,7 +4,7 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:flutter/widgets.dart';
 
 export 'agora_chat_uikit_theme.dart';
-
+export 'agora_chat_define.dart';
 export 'controllers/agora_chat_uikit_controller.dart';
 export 'controllers/agora_conversation_list_controller.dart';
 export 'controllers/agora_contact_list_view_controller.dart';
@@ -22,8 +22,12 @@ export 'views/agora_message_list_view.dart';
 export 'widgets/agora_conversation_list_tile.dart';
 export 'widgets/agora_badge_widget.dart';
 export 'widgets/agora_swipe_widget/agora_swipe_widget.dart';
+export 'widgets/agora_bottom_sheet.dart';
 
 export 'widgets/agora_message_input_widget/agora_message_input_widget.dart';
+export 'widgets/agora_message_input_widget/agora_emoji_data.dart';
+export 'widgets/agora_message_list_item/agora_message_list_item.dart';
+export 'widgets/agora_message_list_item/agora_message_list_text_item.dart';
 
 class AgoraChatUIKit extends StatefulWidget {
   const AgoraChatUIKit({

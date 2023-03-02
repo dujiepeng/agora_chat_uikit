@@ -2,6 +2,7 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:flutter/material.dart';
 
+
 class AgoraMessagesPage extends StatefulWidget {
   const AgoraMessagesPage({
     super.key,
@@ -98,72 +99,13 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
   }
 
   void showMoreItems() {
-    showModalBottomSheet(
-      elevation: 50,
-      context: context,
-      builder: (context) {
-        return SizedBox(
-          height: 250,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              const Divider(height: 10),
-              InkWell(
-                child: Container(
-                    margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 245, 245, 245),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "Camera",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w600),
-                      ),
-                    )),
-                onTap: () => {},
-              ),
-              InkWell(
-                child: Container(
-                    margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 245, 245, 245),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "Album",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w600),
-                      ),
-                    )),
-                onTap: () => {},
-              ),
-              InkWell(
-                child: Container(
-                    margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 245, 245, 245),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "Files",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w600),
-                      ),
-                    )),
-                onTap: () => {},
-              ),
-            ],
-          ),
-        );
-      },
-    );
+    AgoraBottomSheet(
+      context,
+      items: [
+        AgoraBottomSheetItem(label: "Camera", onTap: () {}),
+        AgoraBottomSheetItem(label: "Album", onTap: () {}),
+        AgoraBottomSheetItem(label: "Files", onTap: () {}),
+      ],
+    ).show();
   }
 }

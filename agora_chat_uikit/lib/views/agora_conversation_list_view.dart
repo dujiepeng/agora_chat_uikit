@@ -10,12 +10,6 @@ typedef AgoraConversationItemWidgetBuilder = Widget? Function(
   ChatConversation conversation,
 );
 
-typedef AgoraWidgetBuilder = Widget? Function(
-  BuildContext context,
-  String conversationId,
-  ChatConversationType type,
-);
-
 class AgoraConversationListView extends StatefulWidget {
   const AgoraConversationListView({
     super.key,
@@ -40,8 +34,8 @@ class AgoraConversationListView extends StatefulWidget {
   final AgoraConversationListController? conversationListController;
   final ScrollController? controller;
   final AgoraConversationItemWidgetBuilder? itemBuilder;
-  final AgoraWidgetBuilder? avatarBuilder;
-  final AgoraWidgetBuilder? showNameBuilder;
+  final AgoraConversationWidgetBuilder? avatarBuilder;
+  final AgoraConversationWidgetBuilder? showNameBuilder;
 
   final bool reverse;
   final bool? primary;

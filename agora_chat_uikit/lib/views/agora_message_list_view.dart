@@ -1,4 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:agora_chat_uikit/controllers/agora_base_controller.dart';
 
 import 'package:flutter/material.dart';
@@ -9,8 +10,8 @@ class AgoraMessageListViewController extends AgoraBaseController {
     _addChatManagerListener();
   }
 
-  List<ChatMessage> _oldList = [];
-  List<ChatMessage> _newList = [];
+  final List<ChatMessage> _oldList = [];
+  final List<ChatMessage> _newList = [];
 
   bool _hasMore = true;
   bool _loading = false;
@@ -21,7 +22,23 @@ class AgoraMessageListViewController extends AgoraBaseController {
         key,
         ChatMessageEvent(
           onProgress: (msgId, progress) {},
-          onSuccess: (msgId, msg) {},
+          onSuccess: (msgId, msg) {
+            int index = -1;
+            do {
+              index = _newList.indexWhere((element) => msgId == element.msgId);
+              if (index > 0) {
+                _newList[index] = msg;
+                break;
+              }
+              index = _oldList.indexWhere((element) => msgId == element.msgId);
+              if (index > 0) {
+                _newList[index] = msg;
+              }
+            } while (true);
+            if (index > 0) {
+              reloadData();
+            }
+          },
           onError: (msgId, msg, error) {},
         ));
     ChatClient.getInstance.chatManager.addEventHandler(
@@ -34,7 +51,7 @@ class AgoraMessageListViewController extends AgoraBaseController {
             List<ChatMessage> tmp = messages
                 .where((element) => element.conversationId == conversation.id)
                 .toList();
-            _newList = _newList + tmp;
+            _newList.addAll(tmp);
             reloadData();
           },
           onMessagesDelivered: (messages) {},
@@ -59,7 +76,7 @@ class AgoraMessageListViewController extends AgoraBaseController {
 
   void sendMessage(ChatMessage message) async {
     ChatClient.getInstance.chatManager.sendMessage(message);
-    _newList = _newList + [message];
+    _newList.add(message);
     await moveToEnd();
   }
 
@@ -72,15 +89,16 @@ class AgoraMessageListViewController extends AgoraBaseController {
     List<ChatMessage> tmpList = _oldList + _newList;
     List<ChatMessage> list = await conversation.loadMessages(
       startMsgId: tmpList.isEmpty ? "" : tmpList.first.msgId,
+      loadCount: count,
     );
     if (list.length < count) {
       _hasMore = false;
     }
     if (!hasFirstLoad) {
-      _newList = list;
+      _newList.addAll(list);
       hasFirstLoad = true;
     } else {
-      _oldList = list + _oldList;
+      _oldList.insertAll(0, list);
     }
     _loading = false;
     reloadData();
@@ -115,10 +133,12 @@ class AgoraMessageListView extends StatefulWidget {
     super.key,
     required this.conversation,
     this.messageListViewController,
+    this.itemBuilder,
   });
 
   final ChatConversation conversation;
   final AgoraMessageListViewController? messageListViewController;
+  final AgoraMessageListItemBuilder? itemBuilder;
 
   @override
   State<AgoraMessageListView> createState() => _AgoraMessageListViewState();
@@ -211,43 +231,47 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
     List<ChatMessage> newList = controller._newList;
     return Opacity(
       opacity: controller.hasFirstLoad ? 1 : 0,
-      child: CustomScrollView(
-        center: _centerKey,
-        physics: const AlwaysScrollableScrollPhysics(),
-        controller: _scrollController,
-        slivers: [
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                return messageWidget(oldList[index]);
-              },
-              childCount: oldList.length,
+      child: Scrollbar(
+        child: CustomScrollView(
+          center: _centerKey,
+          physics: const AlwaysScrollableScrollPhysics(),
+          controller: _scrollController,
+          slivers: [
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  debugPrint("index $index");
+                  return messageWidget(oldList[oldList.length - 1 - index]);
+                },
+                childCount: oldList.length,
+              ),
             ),
-          ),
-          SliverPadding(
-            padding: EdgeInsets.zero,
-            key: _centerKey,
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                return messageWidget(newList[index]);
-              },
-              childCount: newList.length,
+            SliverPadding(
+              padding: EdgeInsets.zero,
+              key: _centerKey,
             ),
-          ),
-        ],
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  return messageWidget(newList[index]);
+                },
+                childCount: newList.length,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget messageWidget(ChatMessage message) {
-    ChatTextMessageBody body = message.body as ChatTextMessageBody;
-    return SizedBox(
-      height: 80,
-      child: Center(
-        child: Text(body.content),
-      ),
-    );
+    return widget.itemBuilder?.call(context, message) ??
+        () {
+          if (message.body.type == MessageType.TXT) {
+            return AgoraMessageListTextItem(message: message);
+          } else if (message.body.type == MessageType.IMAGE) {}
+
+          return Container(width: 100, height: 100, color: Colors.red);
+        }();
   }
 }

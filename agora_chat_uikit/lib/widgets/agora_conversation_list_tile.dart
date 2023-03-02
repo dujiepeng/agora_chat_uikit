@@ -24,7 +24,7 @@ class AgoraConversationListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      key: ValueKey(conversation.id),
+      // key: ValueKey(conversation.id),
       future: conversation.latestMessage(),
       builder: (context, snapshot) {
         ChatMessage? msg;
