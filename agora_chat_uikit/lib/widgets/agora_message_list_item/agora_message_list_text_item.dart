@@ -28,7 +28,7 @@ class AgoraMessageListTextItem extends StatelessWidget {
       message: message,
       childBuilder: (context) {
         ChatTextMessageBody body = message.body as ChatTextMessageBody;
-        return Text(
+        return SelectableText(
           body.content,
           style: TextStyle(
             color: isLeft ? Colors.black : Colors.white,
