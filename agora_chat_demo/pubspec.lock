@@ -4,11 +4,10 @@ packages:
   agora_chat_sdk:
     dependency: "direct main"
     description:
-      name: agora_chat_sdk
-      sha256: e14e3e4870c47c3511f75b837355bb7c88a4ed53c2ff2c9a19ae3c9145de99d1
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.9"
+      path: "../../agora_chat_sdk"
+      relative: true
+    source: path
+    version: "1.1.0"
   agora_chat_uikit:
     dependency: "direct main"
     description:

@@ -15,14 +15,18 @@ class AgoraMessageInputWidget extends StatefulWidget {
     this.enableVoice = true,
     this.enableMore = true,
     this.hiddenStr = "请输入消息",
-    this.textFieldOnChanged,
+    this.onTextFieldChanged,
+    this.onSendBtnTap,
+    this.onTextFieldFocus,
   });
   final String? inputTextStr;
   final VoidCallback? recordStart;
   final VoidCallback? recordCancel;
   final VoidCallback? recordDone;
   final VoidCallback? moreAction;
-  final void Function(String text)? textFieldOnChanged;
+  final void Function(String text)? onSendBtnTap;
+  final void Function(String text)? onTextFieldChanged;
+  final VoidCallback? onTextFieldFocus;
   final bool enableEmoji;
   final bool enableVoice;
   final bool enableMore;
@@ -39,13 +43,16 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
 
   final FocusNode _inputFocusNode = FocusNode();
   final GlobalKey _gestureKey = GlobalKey();
+  bool _showSendBtn = false;
   _AgoraVoiceOffsetType _voiceTouchType = _AgoraVoiceOffsetType.noTouch;
   @override
   void initState() {
     super.initState();
     textEditingController = TextEditingController(
       text: widget.inputTextStr,
-    );
+    )..addListener(() {
+        _adjustSendBtn();
+      });
     _inputFocusNode.addListener(() {
       if (_inputFocusNode.hasFocus) {
         _updateCurrentInputType(_AgoraInputType.text);
@@ -60,13 +67,25 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
     super.dispose();
   }
 
+  void _adjustSendBtn() {
+    if (textEditingController.text.isEmpty) {
+      if (_showSendBtn) {
+        setState(() => _showSendBtn = false);
+      }
+    } else {
+      if (!_showSendBtn) {
+        setState(() => _showSendBtn = true);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -110,25 +129,50 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              InkWell(
-                                onTap: () {
-                                  _inputFocusNode.unfocus();
-                                  widget.moreAction?.call();
-                                  _updateCurrentInputType(
-                                      _AgoraInputType.dismiss);
-                                },
-                                child: Container(
-                                  width: 35,
-                                  height: 35,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: _currentInputType ==
-                                            _AgoraInputType.more
-                                        ? Colors.blue
-                                        : Colors.red,
-                                  ),
-                                ),
-                              ),
+                              _showSendBtn
+                                  ? InkWell(
+                                      key: const ValueKey("1"),
+                                      onTap: () {
+                                        widget.onSendBtnTap?.call(
+                                            textEditingController.text.trim());
+                                        textEditingController.text = "";
+                                      },
+                                      child: Container(
+                                        width: 55,
+                                        height: 35,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: Colors.green,
+                                        ),
+                                        child: const Center(
+                                            child: Text(
+                                          "Send",
+                                          style: TextStyle(color: Colors.white),
+                                        )),
+                                      ),
+                                    )
+                                  : InkWell(
+                                      key: const ValueKey("2"),
+                                      onTap: () {
+                                        _inputFocusNode.unfocus();
+                                        widget.moreAction?.call();
+                                        _updateCurrentInputType(
+                                            _AgoraInputType.dismiss);
+                                      },
+                                      child: Container(
+                                        width: 35,
+                                        height: 35,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: _currentInputType ==
+                                                  _AgoraInputType.more
+                                              ? Colors.blue
+                                              : Colors.red,
+                                        ),
+                                      ),
+                                    ),
                             ],
                           ),
                         ),
@@ -170,8 +214,11 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
         children: [
           Expanded(
             child: TextField(
+              onChanged: (value) {
+                widget.onTextFieldChanged?.call(value);
+              },
               onTap: () {
-                widget.textFieldOnChanged?.call(textEditingController.text);
+                widget.onTextFieldFocus?.call();
               },
               focusNode: _inputFocusNode,
               controller: textEditingController,
@@ -259,10 +306,10 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
   Widget _faceWidget() {
     return AnimatedContainer(
       onEnd: () {
-        widget.textFieldOnChanged?.call(textEditingController.text);
+        widget.onTextFieldFocus?.call();
       },
       curve: Curves.easeOut,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 250),
       height: _currentInputType == _AgoraInputType.emoji ? 200 : 0,
       child: Stack(
         children: [
@@ -271,6 +318,7 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
               emojiClicked: (emoji) {
                 TextEditingValue value = textEditingController.value;
                 int current = value.selection.baseOffset;
+                if (current < 0) current = 0;
                 String text = value.text;
                 text = text.substring(0, current) +
                     emoji +

@@ -35,7 +35,9 @@ dependencies:
   agora_chat_uikit:
     path: ../agora_chat_uikit
 
-  agora_chat_sdk: ^1.0.9
+  # agora_chat_sdk: ^1.0.9
+  agora_chat_sdk:
+    path: ../../agora_chat_sdk/
 
   common_utils: ^2.1.0
 

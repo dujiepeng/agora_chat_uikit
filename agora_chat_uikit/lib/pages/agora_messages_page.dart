@@ -28,6 +28,12 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
   }
 
   @override
+  void dispose() {
+    msgListViewController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -67,14 +73,22 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
             Expanded(
               child: AgoraMessageListView(
                 conversation: widget.conversation,
-                controller: msgListViewController,
+                messageListViewController: msgListViewController,
               ),
             ),
             widget.inputBar ??
                 AgoraMessageInputWidget(
-                  moreAction: showMoreItems,
-                  textFieldOnChanged: (text) {
+                  onTextFieldFocus: () {
                     msgListViewController.moveToEnd();
+                  },
+                  moreAction: showMoreItems,
+                  onTextFieldChanged: (text) {},
+                  onSendBtnTap: (text) {
+                    var msg = ChatMessage.createTxtSendMessage(
+                        targetId: widget.conversation.id, content: text);
+                    msg.chatType =
+                        ChatType.values[widget.conversation.type.index];
+                    msgListViewController.sendMessage(msg);
                   },
                 )
           ],
