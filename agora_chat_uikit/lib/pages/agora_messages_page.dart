@@ -2,18 +2,27 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:flutter/material.dart';
 
-
 class AgoraMessagesPage extends StatefulWidget {
   const AgoraMessagesPage({
     super.key,
     this.appBar,
     this.inputBar,
     required this.conversation,
+    this.onTap,
+    this.onBubbleLongPress,
+    this.onBubbleDoubleTap,
+    this.avatarBuilder,
+    this.showNameBuilder,
   });
 
   final AppBar? appBar;
   final Widget? inputBar;
   final ChatConversation conversation;
+  final AgoraMessageTapBuilder? onTap;
+  final AgoraMessageTapBuilder? onBubbleLongPress;
+  final AgoraMessageTapBuilder? onBubbleDoubleTap;
+  final AgoraWidgetBuilder? avatarBuilder;
+  final AgoraWidgetBuilder? showNameBuilder;
 
   @override
   State<AgoraMessagesPage> createState() => _AgoraMessagesPageState();
@@ -75,6 +84,15 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
               child: AgoraMessageListView(
                 conversation: widget.conversation,
                 messageListViewController: msgListViewController,
+                onTap: (context, message) {
+                  debugPrint("message tap");
+                },
+                onBubbleDoubleTap: (context, message) {
+                  debugPrint("message double tap");
+                },
+                onBubbleLongPress: (context, message) {
+                  debugPrint("message long press");
+                },
               ),
             ),
             widget.inputBar ??
@@ -100,12 +118,23 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
 
   void showMoreItems() {
     AgoraBottomSheet(
-      context,
       items: [
-        AgoraBottomSheetItem(label: "Camera", onTap: () {}),
-        AgoraBottomSheetItem(label: "Album", onTap: () {}),
-        AgoraBottomSheetItem(label: "Files", onTap: () {}),
+        AgoraBottomSheetItem(
+            label: "Camera",
+            onTap: () {
+              Navigator.of(context).pop();
+            }),
+        AgoraBottomSheetItem(
+            label: "Album",
+            onTap: () {
+              Navigator.of(context).pop();
+            }),
+        AgoraBottomSheetItem(
+            label: "Files",
+            onTap: () {
+              Navigator.of(context).pop();
+            }),
       ],
-    ).show();
+    ).show(context);
   }
 }

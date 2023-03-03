@@ -5,11 +5,16 @@ import 'package:agora_chat_uikit/controllers/agora_base_controller.dart';
 import 'package:flutter/material.dart';
 
 class AgoraMessageListViewController extends AgoraBaseController {
-  AgoraMessageListViewController(this.conversation, {super.key}) {
+  AgoraMessageListViewController(
+    this.conversation, {
+    super.key,
+    this.sendReadAck = true,
+  }) {
     _makeAllMessagesAsRead();
     _addChatManagerListener();
   }
 
+  final bool sendReadAck;
   final List<ChatMessage> _oldList = [];
   final List<ChatMessage> _newList = [];
 
@@ -151,11 +156,21 @@ class AgoraMessageListView extends StatefulWidget {
     required this.conversation,
     this.messageListViewController,
     this.itemBuilder,
+    this.onTap,
+    this.onBubbleLongPress,
+    this.onBubbleDoubleTap,
+    this.avatarBuilder,
+    this.showNameBuilder,
   });
 
   final ChatConversation conversation;
   final AgoraMessageListViewController? messageListViewController;
   final AgoraMessageListItemBuilder? itemBuilder;
+  final AgoraMessageTapBuilder? onTap;
+  final AgoraMessageTapBuilder? onBubbleLongPress;
+  final AgoraMessageTapBuilder? onBubbleDoubleTap;
+  final AgoraWidgetBuilder? avatarBuilder;
+  final AgoraWidgetBuilder? showNameBuilder;
 
   @override
   State<AgoraMessageListView> createState() => _AgoraMessageListViewState();
@@ -282,13 +297,52 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
   }
 
   Widget messageWidget(ChatMessage message) {
+    if (controller.sendReadAck) {
+      sendReadAck(message);
+    }
+
     return widget.itemBuilder?.call(context, message) ??
         () {
           if (message.body.type == MessageType.TXT) {
-            return AgoraMessageListTextItem(message: message);
-          } else if (message.body.type == MessageType.IMAGE) {}
+            return AgoraMessageListTextItem(
+              message: message,
+              onTap: () => widget.onTap?.call(context, message),
+              onBubbleDoubleTap: () =>
+                  widget.onBubbleDoubleTap?.call(context, message),
+              onBubbleLongPress: () =>
+                  widget.onBubbleLongPress?.call(context, message),
+            );
+          } else if (message.body.type == MessageType.IMAGE) {
+            return AgoraMessageListImageItem(
+              message: message,
+              onTap: () => widget.onTap?.call(context, message),
+              onBubbleDoubleTap: () =>
+                  widget.onBubbleDoubleTap?.call(context, message),
+              onBubbleLongPress: () =>
+                  widget.onBubbleLongPress?.call(context, message),
+            );
+          }
 
           return Container(width: 100, height: 100, color: Colors.red);
         }();
+  }
+
+  void sendReadAck(ChatMessage message) async {
+    if (message.direction == MessageDirection.RECEIVE) {
+      if (message.chatType == ChatType.Chat && !message.hasReadAck) {
+        debugPrint("send read ack, msgId: ${message.msgId}");
+        try {
+          ChatClient.getInstance.chatManager.sendMessageReadAck(message);
+        } catch (e) {
+          debugPrint("send read ack error, msgId: ${message.msgId}");
+        }
+      }
+    }
+  }
+
+  void markMessageAsRead(ChatMessage message) {
+    if (message.direction == MessageDirection.RECEIVE) {
+      controller.conversation.markMessageAsRead(message.msgId);
+    }
   }
 }

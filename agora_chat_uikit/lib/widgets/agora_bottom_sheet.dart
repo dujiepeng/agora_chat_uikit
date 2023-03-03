@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 
 class AgoraBottomSheet {
-  AgoraBottomSheet(
-    this.context, {
+  AgoraBottomSheet({
     this.backgroundColor = Colors.white,
     required this.items,
     this.height = 250,
     this.titleLabel,
   });
   final Color backgroundColor;
-  final BuildContext context;
+
   final List<AgoraBottomSheetItem> items;
   final double height;
   final String? titleLabel;
 
-  void show() {
+  Future<T?> show<T>(BuildContext context) {
     List<Widget> list = [];
     if (titleLabel != null) {
       list.add(Padding(
@@ -43,20 +42,19 @@ class AgoraBottomSheet {
               borderRadius: BorderRadius.circular(30),
             ),
             child: Center(
-              child: Text(
-                item.label,
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: item.labelColor),
-              ),
+              child: Text(item.label,
+                  style: item.style ??
+                      const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black)),
             ),
           ),
         ),
       );
     }
     list.add(const SizedBox(height: 10));
-    showModalBottomSheet(
+    return showModalBottomSheet(
       backgroundColor: backgroundColor,
       context: context,
       shape: const RoundedRectangleBorder(
@@ -81,10 +79,10 @@ class AgoraBottomSheetItem {
     required this.label,
     required this.onTap,
     this.backgroundColor = const Color.fromRGBO(250, 250, 250, 1),
-    this.labelColor = const Color.fromRGBO(0, 0, 0, 1),
+    this.style,
   });
   final String label;
   final VoidCallback onTap;
   final Color backgroundColor;
-  final Color labelColor;
+  final TextStyle? style;
 }

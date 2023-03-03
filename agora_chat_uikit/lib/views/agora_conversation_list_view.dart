@@ -142,47 +142,20 @@ class AgoraConversationListViewState extends State<AgoraConversationListView> {
                             backgroundColor: Colors.red,
                             text: "删除",
                             confirmAction: (_) async {
-                              return await showModalBottomSheet(
-                                    elevation: 300,
-                                    context: context,
-                                    builder: (context) {
-                                      return SizedBox(
-                                        height: 250,
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            const Divider(height: 40),
-                                            const Text(
-                                              "删除会话?",
-                                              style: TextStyle(
-                                                  fontSize: 22,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                            const Divider(height: 40),
-                                            InkWell(
-                                              child: const Text(
-                                                "确定",
-                                                style: TextStyle(fontSize: 18),
-                                              ),
-                                              onTap: () => Navigator.of(context)
-                                                  .pop(AgoraSwipeItemAction
-                                                      .dismiss),
-                                            ),
-                                            const Divider(height: 40),
-                                            InkWell(
-                                              child: const Text(
-                                                "取消",
-                                                style: TextStyle(fontSize: 18),
-                                              ),
-                                              onTap: () => Navigator.of(context)
-                                                  .pop(AgoraSwipeItemAction
-                                                      .close),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  ) ??
+                              return await AgoraBottomSheet(
+                                    titleLabel: "删除会话",
+                                    items: [
+                                      AgoraBottomSheetItem(
+                                          label: "确定",
+                                          onTap: () => Navigator.of(context)
+                                              .pop(AgoraSwipeItemAction
+                                                  .dismiss)),
+                                      AgoraBottomSheetItem(
+                                          label: "取消",
+                                          onTap: () => Navigator.of(context)
+                                              .pop(AgoraSwipeItemAction.close)),
+                                    ],
+                                  ).show(context) ??
                                   AgoraSwipeItemAction.close;
                             },
                           ),
@@ -208,8 +181,9 @@ class AgoraConversationListViewState extends State<AgoraConversationListView> {
                                       conversation: conversation,
                                     );
                                   },
-                                )).then((value) =>
-                                    controller.loadAllConversations());
+                                )).then((value) async {
+                                  controller.loadAllConversations();
+                                });
                               }
                             },
                           ),

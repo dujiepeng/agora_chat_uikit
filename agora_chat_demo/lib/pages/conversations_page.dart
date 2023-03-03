@@ -128,15 +128,6 @@ class _ConversationsPageState extends State<ConversationsPage> {
       ),
       body: AgoraConversationListView(
         conversationListController: conversationListController,
-        // onItemTap: (conversation) {
-        //   Navigator.of(context).push(MaterialPageRoute(
-        //     builder: (context) {
-        //       return MessagePage(
-        //         conversation: conversation,
-        //       );
-        //     },
-        //   ));
-        // },
       ),
     );
   }

@@ -4,28 +4,32 @@ import 'package:flutter/material.dart';
 
 import 'agora_message_status_widget.dart';
 
-class AgoraMessageListItem extends StatelessWidget {
-  const AgoraMessageListItem({
+class AgoraMessageBubble extends StatelessWidget {
+  const AgoraMessageBubble({
     super.key,
     required this.message,
     required this.childBuilder,
-    this.onBubbleLongTap,
+    this.onTap,
+    this.onBubbleLongPress,
     this.onBubbleDoubleTap,
-    this.onResendTap,
-    this.bubbleColor,
     this.avatarBuilder,
     this.showNameBuilder,
+    this.onResendTap,
+    this.bubbleColor,
+    this.padding,
   });
 
   final ChatMessage message;
-  final VoidCallback? onBubbleLongTap;
+  final VoidCallback? onTap;
+  final VoidCallback? onBubbleLongPress;
   final VoidCallback? onBubbleDoubleTap;
-  final VoidCallback? onResendTap;
   final AgoraWidgetBuilder? avatarBuilder;
   final AgoraWidgetBuilder? showNameBuilder;
 
+  final VoidCallback? onResendTap;
   final WidgetBuilder childBuilder;
   final Color? bubbleColor;
+  final EdgeInsets? padding;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +51,7 @@ class AgoraMessageListItem extends StatelessWidget {
       ),
       constraints: const BoxConstraints(maxWidth: 260),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+        padding: padding ?? const EdgeInsets.fromLTRB(12, 8, 12, 8),
         child: childBuilder(context),
       ),
     );
@@ -76,10 +80,11 @@ class AgoraMessageListItem extends StatelessWidget {
     }
 
     insideBubbleWidgets.add(content);
-    insideBubbleWidgets.add(const SizedBox(width: 10.4));
+    insideBubbleWidgets.add(SizedBox(width: isLeft ? 0 : 10.4));
 
     if (!isLeft) {
-      insideBubbleWidgets.add(AgoraMessageStatusWidget(message));
+      insideBubbleWidgets
+          .add(AgoraMessageStatusWidget(message, onTap: onResendTap));
     }
 
     content = Row(
@@ -91,9 +96,14 @@ class AgoraMessageListItem extends StatelessWidget {
     insideBubbleWidgets.clear();
 
     content = Padding(
-      padding: const EdgeInsets.fromLTRB(15, 7.5, 15, 7.5),
+      padding: EdgeInsets.fromLTRB(15, 7.5, isLeft ? 7.5 : 15, 7.5),
       child: content,
     );
-    return content;
+    return InkWell(
+      onDoubleTap: onBubbleDoubleTap,
+      onTap: onTap,
+      onLongPress: onBubbleLongPress,
+      child: content,
+    );
   }
 }

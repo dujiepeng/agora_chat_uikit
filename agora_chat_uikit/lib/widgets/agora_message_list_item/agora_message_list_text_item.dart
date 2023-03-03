@@ -7,7 +7,8 @@ class AgoraMessageListTextItem extends StatelessWidget {
   const AgoraMessageListTextItem({
     super.key,
     required this.message,
-    this.onBubbleLongTap,
+    this.onTap,
+    this.onBubbleLongPress,
     this.onBubbleDoubleTap,
     this.onResendTap,
     this.avatarBuilder,
@@ -15,7 +16,8 @@ class AgoraMessageListTextItem extends StatelessWidget {
   });
 
   final ChatMessage message;
-  final VoidCallback? onBubbleLongTap;
+  final VoidCallback? onTap;
+  final VoidCallback? onBubbleLongPress;
   final VoidCallback? onBubbleDoubleTap;
   final VoidCallback? onResendTap;
   final AgoraWidgetBuilder? avatarBuilder;
@@ -24,7 +26,7 @@ class AgoraMessageListTextItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isLeft = message.direction == MessageDirection.RECEIVE;
-    return AgoraMessageListItem(
+    return AgoraMessageBubble(
       message: message,
       childBuilder: (context) {
         ChatTextMessageBody body = message.body as ChatTextMessageBody;
@@ -35,6 +37,11 @@ class AgoraMessageListTextItem extends StatelessWidget {
           ),
         );
       },
+      onBubbleDoubleTap: onBubbleDoubleTap,
+      onBubbleLongPress: onBubbleLongPress,
+      onTap: onTap,
+      avatarBuilder: avatarBuilder,
+      showNameBuilder: showNameBuilder,
     );
   }
 }

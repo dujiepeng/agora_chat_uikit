@@ -26,8 +26,9 @@ export 'widgets/agora_bottom_sheet.dart';
 
 export 'widgets/agora_message_input_widget/agora_message_input_widget.dart';
 export 'widgets/agora_message_input_widget/agora_emoji_data.dart';
-export 'widgets/agora_message_list_item/agora_message_list_item.dart';
+export 'widgets/agora_message_list_item/agora_message_bubble.dart';
 export 'widgets/agora_message_list_item/agora_message_list_text_item.dart';
+export 'widgets/agora_message_list_item/agora_message_list_image_item.dart';
 
 class AgoraChatUIKit extends StatefulWidget {
   const AgoraChatUIKit({

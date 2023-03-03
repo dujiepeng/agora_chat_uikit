@@ -11,3 +11,6 @@ typedef AgoraConversationWidgetBuilder = Widget? Function(
 
 typedef AgoraMessageListItemBuilder = Widget? Function(
     BuildContext context, ChatMessage message);
+
+typedef AgoraMessageTapBuilder = void Function(
+    BuildContext context, ChatMessage message);
