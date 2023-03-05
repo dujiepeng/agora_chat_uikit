@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AgoraMessagesPage extends StatefulWidget {
   const AgoraMessagesPage({
@@ -13,6 +17,7 @@ class AgoraMessagesPage extends StatefulWidget {
     this.onBubbleDoubleTap,
     this.avatarBuilder,
     this.showNameBuilder,
+    this.moreItems,
   });
 
   final AppBar? appBar;
@@ -23,6 +28,7 @@ class AgoraMessagesPage extends StatefulWidget {
   final AgoraMessageTapBuilder? onBubbleDoubleTap;
   final AgoraWidgetBuilder? avatarBuilder;
   final AgoraWidgetBuilder? showNameBuilder;
+  final List<AgoraBottomSheetItem>? moreItems;
 
   @override
   State<AgoraMessagesPage> createState() => _AgoraMessagesPageState();
@@ -30,7 +36,7 @@ class AgoraMessagesPage extends StatefulWidget {
 
 class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
   late final AgoraMessageListViewController msgListViewController;
-
+  final ImagePicker _picker = ImagePicker();
   @override
   void initState() {
     super.initState();
@@ -84,14 +90,16 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
               child: AgoraMessageListView(
                 conversation: widget.conversation,
                 messageListViewController: msgListViewController,
-                onTap: (context, message) {
-                  debugPrint("message tap");
+                onTap: (context, message) async {
+                  if (message.body.type == MessageType.VOICE) {
+                    _voiceBubblePressed(message);
+                  }
                 },
                 onBubbleDoubleTap: (context, message) {
                   debugPrint("message double tap");
                 },
-                onBubbleLongPress: (context, message) {
-                  debugPrint("message long press");
+                onBubbleLongPress: (context, message) async {
+                  await longPressAction.call(message);
                 },
               ),
             ),
@@ -116,25 +124,143 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
     );
   }
 
+  Future<void> longPressAction(ChatMessage message) async {
+    List<AgoraBottomSheetItem> list = [];
+    if (message.body.type == MessageType.TXT) {
+      list.add(
+        AgoraBottomSheetItem(
+          label: "Copy",
+          onTap: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      );
+    }
+    list.add(
+      AgoraBottomSheetItem(
+        label: "Delete",
+        onTap: () {
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+    if (DateTime.now().millisecondsSinceEpoch - message.serverTime <
+        180 * 1000) {
+      list.add(
+        AgoraBottomSheetItem(
+          label: "Unsend",
+          labelStyle: const TextStyle(
+              color: Color.fromRGBO(255, 20, 204, 1),
+              fontWeight: FontWeight.w400,
+              fontSize: 18),
+          onTap: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      );
+    }
+    return await AgoraBottomSheet(
+      items: list,
+    ).show(context);
+  }
+
   void showMoreItems() {
     AgoraBottomSheet(
-      items: [
-        AgoraBottomSheetItem(
-            label: "Camera",
-            onTap: () {
-              Navigator.of(context).pop();
-            }),
-        AgoraBottomSheetItem(
-            label: "Album",
-            onTap: () {
-              Navigator.of(context).pop();
-            }),
-        AgoraBottomSheetItem(
-            label: "Files",
-            onTap: () {
-              Navigator.of(context).pop();
-            }),
-      ],
+      items: widget.moreItems ??
+          [
+            AgoraBottomSheetItem(
+                label: "Camera",
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _takePhoto();
+                }),
+            AgoraBottomSheetItem(
+                label: "Album",
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _openImagePicker();
+                }),
+            AgoraBottomSheetItem(
+                label: "Files",
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _openFilePicker();
+                }),
+          ],
     ).show(context);
+  }
+
+  void _openFilePicker() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      PlatformFile? file = result.files.first;
+      ChatMessage fileMsg = ChatMessage.createFileSendMessage(
+        targetId: widget.conversation.id,
+        filePath: file.path!,
+        fileSize: file.size,
+        displayName: file.name,
+      );
+      fileMsg.chatType = ChatType.values[widget.conversation.type.index];
+      msgListViewController.sendMessage(fileMsg);
+    }
+  }
+
+  void _takePhoto() async {
+    final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+    if (photo != null) {
+      _sendImage(photo.path);
+    }
+  }
+
+  void _openImagePicker() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      _sendImage(image.path);
+    }
+  }
+
+  void _sendImage(String path) async {
+    if (path.isEmpty) {
+      return;
+    }
+
+    bool hasSize = false;
+    File file = File(path);
+    Image.file(file)
+        .image
+        .resolve(const ImageConfiguration())
+        .addListener(ImageStreamListener((info, synchronousCall) {
+      if (!hasSize) {
+        hasSize = true;
+        ChatMessage msg = ChatMessage.createImageSendMessage(
+          targetId: widget.conversation.id,
+          filePath: path,
+          width: info.image.width.toDouble(),
+          height: info.image.height.toDouble(),
+          fileSize: file.sizeInBytes,
+        );
+        msgListViewController.sendMessage(msg);
+      }
+    }));
+  }
+
+  void _voiceBubblePressed(ChatMessage message) async {
+    await widget.conversation.markMessageAsRead(message.msgId);
+    message.hasRead = true;
+    if (msgListViewController.playingMessage?.msgId == message.msgId) {
+      _stopVoice(message);
+    } else {
+      _playVoice(message);
+    }
+  }
+
+  void _playVoice(ChatMessage message) {
+    msgListViewController.play(message);
+    msgListViewController.reloadData();
+  }
+
+  void _stopVoice(ChatMessage message) {
+    msgListViewController.stopPlay(message);
+    msgListViewController.reloadData();
   }
 }

@@ -1,12 +1,14 @@
+import 'dart:math';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
-
 import 'package:flutter/material.dart';
 
-class AgoraMessageListTextItem extends StatelessWidget {
-  const AgoraMessageListTextItem({
+class AgoraMessageListVoiceItem extends StatelessWidget {
+  const AgoraMessageListVoiceItem({
     super.key,
     required this.model,
+    this.isPlay = false,
     this.onTap,
     this.onBubbleLongPress,
     this.onBubbleDoubleTap,
@@ -23,22 +25,45 @@ class AgoraMessageListTextItem extends StatelessWidget {
   final AgoraWidgetBuilder? avatarBuilder;
   final AgoraWidgetBuilder? showNameBuilder;
 
+  final bool isPlay;
+
   @override
   Widget build(BuildContext context) {
     ChatMessage message = model.message;
-    bool isLeft = message.direction == MessageDirection.RECEIVE;
-    ChatTextMessageBody body = message.body as ChatTextMessageBody;
-    Widget content = SelectableText(
-      body.content,
-      style: TextStyle(
-        color: isLeft ? Colors.black : Colors.white,
-      ),
+    ChatVoiceMessageBody body = message.body as ChatVoiceMessageBody;
+    double width = body.duration / 60 * 160;
+    Widget content = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          color: Colors.red,
+          width: 22,
+          height: 22,
+        ),
+        Container(
+            constraints: const BoxConstraints(minWidth: 20),
+            child: SizedBox(
+              width: min(width, 130),
+            )),
+        Text(AgoraTimeTool.durationStr(body.duration)),
+      ],
     );
+
     return AgoraMessageBubble(
       model: model,
       childBuilder: (context) {
         return content;
       },
+      unreadFlagBuilder: message.hasRead
+          ? null
+          : (context) {
+              return Container(
+                width: 10,
+                height: 10,
+                color: Colors.pink,
+              );
+            },
       onBubbleDoubleTap: onBubbleDoubleTap,
       onBubbleLongPress: onBubbleLongPress,
       onTap: onTap,

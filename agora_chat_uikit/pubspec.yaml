@@ -10,12 +10,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
   flutter_localizations:
     sdk: flutter
   intl: any
   # agora_chat_sdk: ^1.0.9
   agora_chat_sdk:
     path: ../../agora_chat_sdk/
+
+  image_picker: ^0.8.6+4
+
+  file_picker: ^4.6.1
 
   common_utils: ^2.1.0
 

@@ -1,3 +1,4 @@
+import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:flutter/material.dart';
 
 class AgoraBottomSheet {
@@ -13,7 +14,8 @@ class AgoraBottomSheet {
   final double height;
   final String? titleLabel;
 
-  Future<T?> show<T>(BuildContext context) {
+  Future<T?>? show<T>(BuildContext context) {
+    if (items.isEmpty) return null;
     List<Widget> list = [];
     if (titleLabel != null) {
       list.add(Padding(
@@ -42,12 +44,11 @@ class AgoraBottomSheet {
               borderRadius: BorderRadius.circular(30),
             ),
             child: Center(
-              child: Text(item.label,
-                  style: item.style ??
-                      const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black)),
+              child: Text(
+                item.label,
+                style: item.labelStyle ??
+                    Theme.of(context).agoraBottomSheetItemLabelDefaultStyle,
+              ),
             ),
           ),
         ),
@@ -79,10 +80,10 @@ class AgoraBottomSheetItem {
     required this.label,
     required this.onTap,
     this.backgroundColor = const Color.fromRGBO(250, 250, 250, 1),
-    this.style,
+    this.labelStyle,
   });
   final String label;
   final VoidCallback onTap;
   final Color backgroundColor;
-  final TextStyle? style;
+  final TextStyle? labelStyle;
 }

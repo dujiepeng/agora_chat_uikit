@@ -39,6 +39,10 @@ dependencies:
   agora_chat_sdk:
     path: ../../agora_chat_sdk/
 
+  image_picker: ^0.8.6+4
+
+  file_picker: ^4.6.1
+
   common_utils: ^2.1.0
 
 

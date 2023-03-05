@@ -11,9 +11,12 @@ export 'controllers/agora_contact_list_view_controller.dart';
 
 export 'generated/agora_chat_uikit_localizations.dart';
 
+export 'models/agora_message_model.dart';
+
 export 'pages/agora_messages_page.dart';
 
 export 'tools/agora_extension.dart';
+export 'tools/agora_tools.dart';
 
 export 'views/agora_contact_list_view.dart';
 export 'views/agora_conversation_list_view.dart';
@@ -29,6 +32,8 @@ export 'widgets/agora_message_input_widget/agora_emoji_data.dart';
 export 'widgets/agora_message_list_item/agora_message_bubble.dart';
 export 'widgets/agora_message_list_item/agora_message_list_text_item.dart';
 export 'widgets/agora_message_list_item/agora_message_list_image_item.dart';
+export 'widgets/agora_message_list_item//agora_message_list_file_item.dart';
+export 'widgets/agora_message_list_item/agora_message_list_voice_item.dart';
 
 class AgoraChatUIKit extends StatefulWidget {
   const AgoraChatUIKit({

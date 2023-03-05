@@ -131,8 +131,8 @@ class AgoraConversationListViewState extends State<AgoraConversationListView> {
                         key: ValueKey(conversation.id),
                         rightSwipeItems: [
                           AgoraSwipeItem(
-                            didAction: (AgoraSwipeItemAction action) async {
-                              if (action == AgoraSwipeItemAction.dismiss) {
+                            dismissed: (bool dismissed) async {
+                              if (dismissed) {
                                 {
                                   await controller.deleteConversationWithId(
                                       conversation.id);
@@ -147,13 +147,12 @@ class AgoraConversationListViewState extends State<AgoraConversationListView> {
                                     items: [
                                       AgoraBottomSheetItem(
                                           label: "确定",
-                                          onTap: () => Navigator.of(context)
-                                              .pop(AgoraSwipeItemAction
-                                                  .dismiss)),
+                                          onTap: () =>
+                                              Navigator.of(context).pop(true)),
                                       AgoraBottomSheetItem(
                                           label: "取消",
-                                          onTap: () => Navigator.of(context)
-                                              .pop(AgoraSwipeItemAction.close)),
+                                          onTap: () =>
+                                              Navigator.of(context).pop(false)),
                                     ],
                                   ).show(context) ??
                                   AgoraSwipeItemAction.close;

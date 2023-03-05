@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class AgoraMessageListImageItem extends StatelessWidget {
   const AgoraMessageListImageItem({
     super.key,
-    required this.message,
+    required this.model,
     this.onTap,
     this.onBubbleLongPress,
     this.onBubbleDoubleTap,
@@ -16,16 +16,17 @@ class AgoraMessageListImageItem extends StatelessWidget {
     this.showNameBuilder,
   });
 
-  final ChatMessage message;
-  final VoidCallback? onTap;
-  final VoidCallback? onBubbleLongPress;
-  final VoidCallback? onBubbleDoubleTap;
+  final AgoraMessageListItemModel model;
+  final AgoraMessageTapBuilder? onTap;
+  final AgoraMessageTapBuilder? onBubbleLongPress;
+  final AgoraMessageTapBuilder? onBubbleDoubleTap;
   final VoidCallback? onResendTap;
   final AgoraWidgetBuilder? avatarBuilder;
   final AgoraWidgetBuilder? showNameBuilder;
 
   @override
   Widget build(BuildContext context) {
+    ChatMessage message = model.message;
     ChatImageMessageBody body = message.body as ChatImageMessageBody;
     double max = 200.0;
     double width = body.width ?? max;
@@ -44,10 +45,40 @@ class AgoraMessageListImageItem extends StatelessWidget {
     }
 
     Widget content;
-    if (body.thumbnailStatus == DownloadStatus.SUCCESS) {
-      content = Image.file(File(body.thumbnailLocalPath!), fit: BoxFit.fill);
+    if (message.direction == MessageDirection.SEND) {
+      content = Image(
+          gaplessPlayback: true,
+          image: ResizeImage(
+            FileImage(
+              File(body.localPath),
+            ),
+            width: width.toInt(),
+            height: height.toInt(),
+          ),
+          fit: BoxFit.fill);
+    } else if (body.thumbnailStatus == DownloadStatus.SUCCESS &&
+        body.thumbnailLocalPath != null) {
+      content = Image(
+          gaplessPlayback: true,
+          image: ResizeImage(
+            FileImage(
+              File(body.thumbnailLocalPath!),
+            ),
+            width: width.toInt(),
+            height: height.toInt(),
+          ),
+          fit: BoxFit.fill);
     } else if (body.fileStatus == DownloadStatus.SUCCESS) {
-      content = Image.file(File(body.localPath), fit: BoxFit.fill);
+      content = Image(
+          gaplessPlayback: true,
+          image: ResizeImage(
+            FileImage(
+              File(body.localPath),
+            ),
+            width: width.toInt(),
+            height: height.toInt(),
+          ),
+          fit: BoxFit.fill);
     } else {
       content = FadeInImage.assetNetwork(
           placeholder: "loading",
@@ -56,13 +87,15 @@ class AgoraMessageListImageItem extends StatelessWidget {
     }
 
     return AgoraMessageBubble(
+      bubbleColor: Colors.transparent,
       onBubbleDoubleTap: onBubbleDoubleTap,
       onBubbleLongPress: onBubbleLongPress,
       onTap: onTap,
       avatarBuilder: avatarBuilder,
-      showNameBuilder: showNameBuilder,
+      nicknameBuilder: showNameBuilder,
+      onResendTap: onResendTap,
       padding: EdgeInsets.zero,
-      message: message,
+      model: model,
       childBuilder: (context) {
         return SizedBox(
           width: width,

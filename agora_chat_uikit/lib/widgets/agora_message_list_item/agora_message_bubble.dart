@@ -7,32 +7,35 @@ import 'agora_message_status_widget.dart';
 class AgoraMessageBubble extends StatelessWidget {
   const AgoraMessageBubble({
     super.key,
-    required this.message,
+    required this.model,
     required this.childBuilder,
+    this.unreadFlagBuilder,
     this.onTap,
     this.onBubbleLongPress,
     this.onBubbleDoubleTap,
     this.avatarBuilder,
-    this.showNameBuilder,
+    this.nicknameBuilder,
     this.onResendTap,
     this.bubbleColor,
     this.padding,
   });
 
-  final ChatMessage message;
-  final VoidCallback? onTap;
-  final VoidCallback? onBubbleLongPress;
-  final VoidCallback? onBubbleDoubleTap;
+  final AgoraMessageListItemModel model;
+  final AgoraMessageTapBuilder? onTap;
+  final AgoraMessageTapBuilder? onBubbleLongPress;
+  final AgoraMessageTapBuilder? onBubbleDoubleTap;
   final AgoraWidgetBuilder? avatarBuilder;
-  final AgoraWidgetBuilder? showNameBuilder;
+  final AgoraWidgetBuilder? nicknameBuilder;
 
   final VoidCallback? onResendTap;
   final WidgetBuilder childBuilder;
+  final WidgetBuilder? unreadFlagBuilder;
   final Color? bubbleColor;
   final EdgeInsets? padding;
 
   @override
   Widget build(BuildContext context) {
+    ChatMessage message = model.message;
     bool isLeft = message.direction == MessageDirection.RECEIVE;
     Widget content = Container(
       decoration: BoxDecoration(
@@ -57,10 +60,11 @@ class AgoraMessageBubble extends StatelessWidget {
     );
 
     List<Widget> insideBubbleWidgets = [];
-    if (showNameBuilder != null) {
+
+    if (nicknameBuilder != null) {
       insideBubbleWidgets.add(Container(
         constraints: const BoxConstraints(maxWidth: 260),
-        child: showNameBuilder!.call(context, message.from!),
+        child: nicknameBuilder!.call(context, message.from!),
       ));
       insideBubbleWidgets.add(const SizedBox(height: 6));
       insideBubbleWidgets.add(content);
@@ -86,7 +90,6 @@ class AgoraMessageBubble extends StatelessWidget {
       insideBubbleWidgets
           .add(AgoraMessageStatusWidget(message, onTap: onResendTap));
     }
-
     content = Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       textDirection: isLeft ? TextDirection.ltr : TextDirection.rtl,
@@ -95,15 +98,47 @@ class AgoraMessageBubble extends StatelessWidget {
     );
     insideBubbleWidgets.clear();
 
+    if (unreadFlagBuilder != null && isLeft) {
+      content = Row(
+        children: [
+          content,
+          const SizedBox(
+            width: 10,
+          ),
+          unreadFlagBuilder!.call(context)
+        ],
+      );
+    }
+
     content = Padding(
       padding: EdgeInsets.fromLTRB(15, 7.5, isLeft ? 7.5 : 15, 7.5),
       child: content,
     );
-    return InkWell(
-      onDoubleTap: onBubbleDoubleTap,
-      onTap: onTap,
-      onLongPress: onBubbleLongPress,
+
+    content = InkWell(
+      onDoubleTap: () => onBubbleDoubleTap?.call(context, message),
+      onTap: () => onTap?.call(context, message),
+      onLongPress: () => onBubbleLongPress?.call(context, message),
       child: content,
     );
+
+    if (model.needTime) {
+      content = Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Center(
+            child: SizedBox(
+              height: 40,
+              child: Text(
+                AgoraTimeTool.timeStrByMs(message.serverTime),
+                style: Theme.of(context).agoraMessagesListItemTs,
+              ),
+            ),
+          ),
+          content
+        ],
+      );
+    }
+    return content;
   }
 }
