@@ -8,22 +8,137 @@ class AgoraMessageListViewController extends AgoraBaseController {
   AgoraMessageListViewController(
     this.conversation, {
     super.key,
-    this.sendReadAck = true,
+    this.needReadAck = true,
   }) {
-    _makeAllMessagesAsRead();
     _addChatManagerListener();
   }
 
-  final bool sendReadAck;
-
+  final bool needReadAck;
   final List<AgoraMessageListItemModel> _oldList = [];
   final List<AgoraMessageListItemModel> _newList = [];
+  VoidCallback? dismissInputAction;
   ChatMessage? playingMessage;
   int _latestShowTsTime = -1;
   final ChatConversation conversation;
   bool _hasMore = true;
   bool _loading = false;
   bool hasFirstLoad = false;
+
+// send message
+  void sendMessage(ChatMessage message) async {
+    int index = -1;
+    do {
+      index = _newList.indexWhere((element) => message.msgId == element.msgId);
+      if (index > -1) {
+        _newList.removeAt(index);
+        break;
+      }
+      index = _oldList.indexWhere((element) => message.msgId == element.msgId);
+      if (index > -1) {
+        _oldList.removeAt(index);
+      }
+    } while (false);
+
+    ChatMessage msg =
+        await ChatClient.getInstance.chatManager.sendMessage(message);
+    _newList.add(_modelCreator(msg));
+
+    await moveToEnd();
+  }
+
+  // remove message
+  Future<void> removeMessage(ChatMessage message) async {
+    int index = -1;
+    do {
+      index = _newList.indexWhere((element) => message.msgId == element.msgId);
+      if (index >= 0) {
+        _newList.removeAt(index);
+        break;
+      }
+      index = _oldList.indexWhere((element) => message.msgId == element.msgId);
+      if (index >= 0) {
+        _oldList.removeAt(index);
+        break;
+      }
+    } while (false);
+    if (index >= 0) {
+      await conversation.deleteMessage(message.msgId);
+      reloadData();
+    }
+  }
+
+  Future<void> unsendMessage(BuildContext context, ChatMessage message) async {
+    int index = -1;
+    do {
+      index = _newList.indexWhere((element) => message.msgId == element.msgId);
+      if (index >= 0) {
+        _newList.removeAt(index);
+        break;
+      }
+      index = _oldList.indexWhere((element) => message.msgId == element.msgId);
+      if (index >= 0) {
+        _oldList.removeAt(index);
+        break;
+      }
+    } while (false);
+    if (index >= 0) {
+      try {
+        await ChatClient.getInstance.chatManager.recallMessage(message.msgId);
+        reloadData();
+      } on ChatError catch (e) {
+        String str = e.description;
+        final snackBar = SnackBar(content: Text(str));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
+  }
+
+  // load message message
+  Future<void> loadMoreMessage([int count = 10]) async {
+    if (_loading) return;
+    _loading = true;
+    if (!_hasMore) return;
+    List<AgoraMessageListItemModel> tmpList = _oldList + _newList;
+    List<ChatMessage> list = await conversation.loadMessages(
+      startMsgId: tmpList.isEmpty ? "" : tmpList.first.msgId,
+      loadCount: count,
+    );
+    if (list.length < count) {
+      _hasMore = false;
+    }
+
+    List<AgoraMessageListItemModel> models = _modelsCreator(list, _hasMore);
+
+    if (!hasFirstLoad) {
+      _newList.addAll(models);
+      hasFirstLoad = true;
+    } else {
+      _oldList.insertAll(0, models);
+    }
+    _loading = false;
+    reloadData();
+  }
+
+  // mark all messages as read;
+  Future<void> markAllMessagesAsRead() async {
+    return conversation.markAllMessagesAsRead();
+  }
+
+  // mark a message as read;
+  Future<void> markMessageAsRead(ChatMessage message) async {
+    if (message.direction == MessageDirection.RECEIVE) {
+      await conversation.markMessageAsRead(message.msgId);
+    }
+  }
+
+  // 发送 read ack
+  void sendReadAck(ChatMessage message) async {
+    if (needReadAck &&
+        !message.hasReadAck &&
+        message.direction == MessageDirection.RECEIVE) {
+      await ChatClient.getInstance.chatManager.sendMessageReadAck(message);
+    }
+  }
 
   void _handleMessage(String msgId, ChatMessage message) {
     int index = -1;
@@ -97,75 +212,6 @@ class AgoraMessageListViewController extends AgoraBaseController {
     ChatClient.getInstance.chatManager.removeMessageEvent(key);
   }
 
-  void _makeAllMessagesAsRead() async {
-    await conversation.markAllMessagesAsRead();
-  }
-
-  void sendMessage(ChatMessage message) async {
-    int index = -1;
-    do {
-      index = _newList.indexWhere((element) => message.msgId == element.msgId);
-      if (index > -1) {
-        _newList.removeAt(index);
-        break;
-      }
-      index = _oldList.indexWhere((element) => message.msgId == element.msgId);
-      if (index > -1) {
-        _oldList.removeAt(index);
-      }
-    } while (false);
-
-    ChatMessage msg =
-        await ChatClient.getInstance.chatManager.sendMessage(message);
-    _newList.add(_modelCreator(msg));
-
-    await moveToEnd();
-  }
-
-  void removeMessage(ChatMessage message) {
-    int index = -1;
-    do {
-      index = _newList.indexWhere((element) => message.msgId == element.msgId);
-      if (index >= 0) {
-        _newList.removeAt(index);
-        break;
-      }
-      index = _oldList.indexWhere((element) => message.msgId == element.msgId);
-      if (index >= 0) {
-        _oldList.removeAt(index);
-        break;
-      }
-    } while (false);
-    if (index >= 0) {
-      reloadData();
-    }
-  }
-
-  Future<void> loadMoreMessage([int count = 10]) async {
-    if (_loading) return;
-    _loading = true;
-    if (!_hasMore) return;
-    List<AgoraMessageListItemModel> tmpList = _oldList + _newList;
-    List<ChatMessage> list = await conversation.loadMessages(
-      startMsgId: tmpList.isEmpty ? "" : tmpList.first.msgId,
-      loadCount: count,
-    );
-    if (list.length < count) {
-      _hasMore = false;
-    }
-
-    List<AgoraMessageListItemModel> models = _modelsCreator(list, _hasMore);
-
-    if (!hasFirstLoad) {
-      _newList.addAll(models);
-      hasFirstLoad = true;
-    } else {
-      _oldList.insertAll(0, models);
-    }
-    _loading = false;
-    reloadData();
-  }
-
   List<AgoraMessageListItemModel> _modelsCreator(
       List<ChatMessage> msgs, bool hasMore) {
     List<AgoraMessageListItemModel> list = [];
@@ -212,6 +258,7 @@ class AgoraMessageListViewController extends AgoraBaseController {
     return _reloadData?.call();
   }
 
+  //
   void play(ChatMessage message) {
     playingMessage = message;
   }
@@ -314,8 +361,9 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
-    if (!_hasLongPress) return;
-    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    if (!_hasLongPress) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    }
   }
 
   @override
@@ -373,9 +421,7 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
 
   Widget messageWidget(AgoraMessageListItemModel model) {
     ChatMessage message = model.message;
-    if (controller.sendReadAck) {
-      sendReadAck(message);
-    }
+    controller.sendReadAck(message);
 
     Widget content = widget.itemBuilder?.call(context, model.message) ??
         () {
@@ -384,36 +430,32 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
               model: model,
               onTap: widget.onTap,
               onBubbleDoubleTap: widget.onBubbleDoubleTap,
-              onBubbleLongPress: (ctx, msg) async {
-                _hasLongPress = true;
-                widget.onBubbleLongPress?.call(ctx, msg);
-                _hasLongPress = false;
-              },
-              onResendTap: () => resendMsg(message),
+              onBubbleLongPress: _longPressed,
+              onResendTap: () => controller.sendMessage(message),
             );
           } else if (message.body.type == MessageType.IMAGE) {
             return AgoraMessageListImageItem(
               model: model,
               onTap: widget.onTap,
               onBubbleDoubleTap: widget.onBubbleDoubleTap,
-              onBubbleLongPress: widget.onBubbleLongPress,
-              onResendTap: () => resendMsg(message),
+              onBubbleLongPress: _longPressed,
+              onResendTap: () => controller.sendMessage(message),
             );
           } else if (message.body.type == MessageType.FILE) {
             return AgoraMessageListFileItem(
               model: model,
               onTap: widget.onTap,
               onBubbleDoubleTap: widget.onBubbleDoubleTap,
-              onBubbleLongPress: widget.onBubbleLongPress,
-              onResendTap: () => resendMsg(message),
+              onBubbleLongPress: _longPressed,
+              onResendTap: () => controller.sendMessage(message),
             );
           } else if (message.body.type == MessageType.VOICE) {
             return AgoraMessageListVoiceItem(
               model: model,
               onTap: widget.onTap,
               onBubbleDoubleTap: widget.onBubbleDoubleTap,
-              onBubbleLongPress: widget.onBubbleLongPress,
-              onResendTap: () => resendMsg(message),
+              onBubbleLongPress: _longPressed,
+              onResendTap: () => controller.sendMessage(message),
               isPlay: controller.playingMessage?.msgId == message.msgId,
             );
           }
@@ -424,30 +466,12 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
     return content;
   }
 
-  void resendMsg(ChatMessage message) {
-    controller.sendMessage(message);
-  }
+  Future<void> _longPressed(BuildContext ctx, ChatMessage msg) async {
+    controller.dismissInputAction?.call();
+    _hasLongPress = true;
+    await widget.onBubbleLongPress?.call(ctx, msg);
 
-  void sendReadAck(ChatMessage message) async {
-    if (message.body.type == MessageType.VIDEO ||
-        message.body.type == MessageType.VOICE) {
-      return;
-    }
-    if (message.direction == MessageDirection.RECEIVE) {
-      if (message.chatType == ChatType.Chat && !message.hasReadAck) {
-        debugPrint("send read ack, msgId: ${message.msgId}");
-        try {
-          ChatClient.getInstance.chatManager.sendMessageReadAck(message);
-        } catch (e) {
-          debugPrint("send read ack error, msgId: ${message.msgId}");
-        }
-      }
-    }
-  }
-
-  void markMessageAsRead(ChatMessage message) {
-    if (message.direction == MessageDirection.RECEIVE) {
-      controller.conversation.markMessageAsRead(message.msgId);
-    }
+    Future.delayed(const Duration(seconds: 1))
+        .then((value) => _hasLongPress = false);
   }
 }

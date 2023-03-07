@@ -17,3 +17,6 @@ typedef AgoraMessageTapBuilder = Future<void>? Function(
 
 typedef AgoraConfirmDismissCallback = Future<bool> Function(
     BuildContext context);
+
+typedef AgoraConversationItemWidgetBuilder = Widget? Function(
+    BuildContext context, int index, ChatConversation conversation);

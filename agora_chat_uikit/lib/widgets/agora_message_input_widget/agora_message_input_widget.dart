@@ -50,6 +50,7 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
   @override
   void initState() {
     super.initState();
+
     textEditingController = TextEditingController(
       text: widget.inputTextStr,
     )..addListener(() {
@@ -60,6 +61,11 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
         _updateCurrentInputType(_AgoraInputType.text);
       }
     });
+
+    widget.msgListViewController.dismissInputAction = () {
+      _inputFocusNode.unfocus();
+      _updateCurrentInputType(_AgoraInputType.dismiss);
+    };
   }
 
   @override

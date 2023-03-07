@@ -42,6 +42,7 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
   void initState() {
     super.initState();
     msgListViewController = AgoraMessageListViewController(widget.conversation);
+    msgListViewController.markAllMessagesAsRead();
   }
 
   @override
@@ -101,9 +102,8 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
                   debugPrint("message double tap");
                   return;
                 },
-                onBubbleLongPress: (context, message) {
-                  longPressAction.call(message);
-                  return;
+                onBubbleLongPress: (ctx, msg) async {
+                  await longPressAction.call(msg);
                 },
               ),
             ),
@@ -127,7 +127,7 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
     );
   }
 
-  void longPressAction(ChatMessage message) async {
+  Future<void> longPressAction(ChatMessage message) async {
     List<AgoraBottomSheetItem> list = [];
     if (message.body.type == MessageType.TXT) {
       list.add(
@@ -136,7 +136,7 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
           onTap: () {
             ChatTextMessageBody body = message.body as ChatTextMessageBody;
             Clipboard.setData(ClipboardData(text: body.content));
-            Navigator.of(context).pop();
+            return Navigator.of(context).pop();
           },
         ),
       );
@@ -146,7 +146,7 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
         label: "Delete",
         onTap: () {
           msgListViewController.removeMessage(message);
-          Navigator.of(context).pop(true);
+          return Navigator.of(context).pop(true);
         },
       ),
     );
@@ -160,12 +160,13 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
               fontWeight: FontWeight.w400,
               fontSize: 18),
           onTap: () {
-            Navigator.of(context).pop(true);
+            msgListViewController.unsendMessage(context, message);
+            return Navigator.of(context).pop(true);
           },
         ),
       );
     }
-    AgoraBottomSheet(
+    return AgoraBottomSheet(
       items: list,
     ).show(context);
   }

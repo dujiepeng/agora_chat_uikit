@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 export 'agora_chat_uikit_theme.dart';
 export 'agora_chat_define.dart';
 export 'controllers/agora_chat_uikit_controller.dart';
-export 'controllers/agora_conversation_list_controller.dart';
+
 export 'controllers/agora_contact_list_view_controller.dart';
 
 export 'generated/agora_chat_uikit_localizations.dart';
@@ -19,12 +19,13 @@ export 'tools/agora_extension.dart';
 export 'tools/agora_tools.dart';
 
 export 'views/agora_contact_list_view.dart';
-export 'views/agora_conversation_list_view.dart';
 export 'views/agora_message_list_view.dart';
+export 'views/agora_conversation_list_view.dart';
 
 export 'widgets/agora_conversation_list_tile.dart';
 export 'widgets/agora_badge_widget.dart';
 export 'widgets/agora_swipe_widget/agora_swipe_widget.dart';
+export 'widgets/agora_dialog_widget.dart';
 export 'widgets/agora_bottom_sheet.dart';
 
 export 'widgets/agora_message_input_widget/agora_message_input_widget.dart';
