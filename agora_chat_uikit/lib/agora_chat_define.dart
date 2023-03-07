@@ -12,7 +12,7 @@ typedef AgoraConversationWidgetBuilder = Widget? Function(
 typedef AgoraMessageListItemBuilder = Widget? Function(
     BuildContext context, ChatMessage message);
 
-typedef AgoraMessageTapBuilder = void Function(
+typedef AgoraMessageTapBuilder = Future<void>? Function(
     BuildContext context, ChatMessage message);
 
 typedef AgoraConfirmDismissCallback = Future<bool> Function(

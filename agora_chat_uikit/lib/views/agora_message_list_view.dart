@@ -122,7 +122,24 @@ class AgoraMessageListViewController extends AgoraBaseController {
     await moveToEnd();
   }
 
-  void removeMessage(ChatMessage message) {}
+  void removeMessage(ChatMessage message) {
+    int index = -1;
+    do {
+      index = _newList.indexWhere((element) => message.msgId == element.msgId);
+      if (index >= 0) {
+        _newList.removeAt(index);
+        break;
+      }
+      index = _oldList.indexWhere((element) => message.msgId == element.msgId);
+      if (index >= 0) {
+        _oldList.removeAt(index);
+        break;
+      }
+    } while (false);
+    if (index >= 0) {
+      reloadData();
+    }
+  }
 
   Future<void> loadMoreMessage([int count = 10]) async {
     if (_loading) return;
@@ -137,8 +154,7 @@ class AgoraMessageListViewController extends AgoraBaseController {
       _hasMore = false;
     }
 
-    List<AgoraMessageListItemModel> models =
-        list.map((e) => _modelCreator(e)).toList();
+    List<AgoraMessageListItemModel> models = _modelsCreator(list, _hasMore);
 
     if (!hasFirstLoad) {
       _newList.addAll(models);
@@ -150,11 +166,25 @@ class AgoraMessageListViewController extends AgoraBaseController {
     reloadData();
   }
 
+  List<AgoraMessageListItemModel> _modelsCreator(
+      List<ChatMessage> msgs, bool hasMore) {
+    List<AgoraMessageListItemModel> list = [];
+    for (var i = 0; i < msgs.length; i++) {
+      if (i == 0 && !_hasMore) {
+        _latestShowTsTime = msgs[i].serverTime;
+        list.add(AgoraMessageListItemModel(msgs[i], true));
+      } else {
+        list.add(_modelCreator(msgs[i]));
+      }
+    }
+    return list;
+  }
+
   AgoraMessageListItemModel _modelCreator(ChatMessage message) {
     bool needShowTs = false;
     if (_latestShowTsTime < 0) {
       needShowTs = true;
-    } else if ((message.serverTime - _latestShowTsTime).abs() > 60 * 1000) {
+    } else if ((message.serverTime - _latestShowTsTime).abs() > 120 * 1000) {
       needShowTs = true;
     }
     if (needShowTs == true) {
@@ -227,6 +257,7 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
 
   final ScrollController _scrollController = ScrollController();
   late final ValueKey _centerKey;
+  bool _hasLongPress = false;
 
   @override
   void initState() {
@@ -283,7 +314,7 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
-
+    if (!_hasLongPress) return;
     _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
   }
 
@@ -346,14 +377,18 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
       sendReadAck(message);
     }
 
-    return widget.itemBuilder?.call(context, model.message) ??
+    Widget content = widget.itemBuilder?.call(context, model.message) ??
         () {
           if (message.body.type == MessageType.TXT) {
             return AgoraMessageListTextItem(
               model: model,
               onTap: widget.onTap,
               onBubbleDoubleTap: widget.onBubbleDoubleTap,
-              onBubbleLongPress: widget.onBubbleLongPress,
+              onBubbleLongPress: (ctx, msg) async {
+                _hasLongPress = true;
+                widget.onBubbleLongPress?.call(ctx, msg);
+                _hasLongPress = false;
+              },
               onResendTap: () => resendMsg(message),
             );
           } else if (message.body.type == MessageType.IMAGE) {
@@ -385,6 +420,8 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
 
           return Container(width: 100, height: 100, color: Colors.red);
         }();
+
+    return content;
   }
 
   void resendMsg(ChatMessage message) {

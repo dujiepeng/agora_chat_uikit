@@ -18,6 +18,7 @@ class AgoraMessageInputWidget extends StatefulWidget {
     this.onTextFieldChanged,
     this.onSendBtnTap,
     this.onTextFieldFocus,
+    required this.msgListViewController,
   });
   final String? inputTextStr;
   final VoidCallback? recordStart;
@@ -31,6 +32,7 @@ class AgoraMessageInputWidget extends StatefulWidget {
   final bool enableVoice;
   final bool enableMore;
   final String hiddenStr;
+  final AgoraMessageListViewController msgListViewController;
   @override
   State<AgoraMessageInputWidget> createState() =>
       _AgoraMessageInputWidgetState();
@@ -218,6 +220,7 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
                 widget.onTextFieldChanged?.call(value);
               },
               onTap: () {
+                widget.msgListViewController.moveToEnd();
                 widget.onTextFieldFocus?.call();
               },
               focusNode: _inputFocusNode,

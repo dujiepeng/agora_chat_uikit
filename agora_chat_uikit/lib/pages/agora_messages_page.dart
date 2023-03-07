@@ -4,6 +4,7 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AgoraMessagesPage extends StatefulWidget {
@@ -90,24 +91,26 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
               child: AgoraMessageListView(
                 conversation: widget.conversation,
                 messageListViewController: msgListViewController,
-                onTap: (context, message) async {
+                onTap: (context, message) {
                   if (message.body.type == MessageType.VOICE) {
                     _voiceBubblePressed(message);
                   }
+                  return;
                 },
                 onBubbleDoubleTap: (context, message) {
                   debugPrint("message double tap");
+                  return;
                 },
-                onBubbleLongPress: (context, message) async {
-                  await longPressAction.call(message);
+                onBubbleLongPress: (context, message) {
+                  longPressAction.call(message);
+                  return;
                 },
               ),
             ),
             widget.inputBar ??
                 AgoraMessageInputWidget(
-                  onTextFieldFocus: () {
-                    msgListViewController.moveToEnd();
-                  },
+                  msgListViewController: msgListViewController,
+                  onTextFieldFocus: () {},
                   moreAction: showMoreItems,
                   onTextFieldChanged: (text) {},
                   onSendBtnTap: (text) {
@@ -124,13 +127,15 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
     );
   }
 
-  Future<void> longPressAction(ChatMessage message) async {
+  void longPressAction(ChatMessage message) async {
     List<AgoraBottomSheetItem> list = [];
     if (message.body.type == MessageType.TXT) {
       list.add(
         AgoraBottomSheetItem(
           label: "Copy",
           onTap: () {
+            ChatTextMessageBody body = message.body as ChatTextMessageBody;
+            Clipboard.setData(ClipboardData(text: body.content));
             Navigator.of(context).pop();
           },
         ),
@@ -140,7 +145,8 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
       AgoraBottomSheetItem(
         label: "Delete",
         onTap: () {
-          Navigator.of(context).pop();
+          msgListViewController.removeMessage(message);
+          Navigator.of(context).pop(true);
         },
       ),
     );
@@ -154,12 +160,12 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
               fontWeight: FontWeight.w400,
               fontSize: 18),
           onTap: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop(true);
           },
         ),
       );
     }
-    return await AgoraBottomSheet(
+    AgoraBottomSheet(
       items: list,
     ).show(context);
   }
