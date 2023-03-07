@@ -30,12 +30,12 @@ class AgoraMessageListViewController extends AgoraBaseController {
     do {
       index = _newList.indexWhere((element) => message.msgId == element.msgId);
       if (index > -1) {
-        _newList.removeAt(index);
+        _removeListWithIndex(_newList, index);
         break;
       }
       index = _oldList.indexWhere((element) => message.msgId == element.msgId);
       if (index > -1) {
-        _oldList.removeAt(index);
+        _removeListWithIndex(_oldList, index);
       }
     } while (false);
 
@@ -52,12 +52,12 @@ class AgoraMessageListViewController extends AgoraBaseController {
     do {
       index = _newList.indexWhere((element) => message.msgId == element.msgId);
       if (index >= 0) {
-        _newList.removeAt(index);
+        _removeListWithIndex(_newList, index);
         break;
       }
       index = _oldList.indexWhere((element) => message.msgId == element.msgId);
       if (index >= 0) {
-        _oldList.removeAt(index);
+        _removeListWithIndex(_oldList, index);
         break;
       }
     } while (false);
@@ -67,17 +67,24 @@ class AgoraMessageListViewController extends AgoraBaseController {
     }
   }
 
+  void _removeListWithIndex(List<AgoraMessageListItemModel> list, int index) {
+    AgoraMessageListItemModel model = list.removeAt(index);
+    if (list.length != index && model.needTime) {
+      list[index] = list[index].copyWithNeedTime(true);
+    }
+  }
+
   Future<void> unsendMessage(BuildContext context, ChatMessage message) async {
     int index = -1;
     do {
       index = _newList.indexWhere((element) => message.msgId == element.msgId);
       if (index >= 0) {
-        _newList.removeAt(index);
+        _removeListWithIndex(_newList, index);
         break;
       }
       index = _oldList.indexWhere((element) => message.msgId == element.msgId);
       if (index >= 0) {
-        _oldList.removeAt(index);
+        _removeListWithIndex(_oldList, index);
         break;
       }
     } while (false);
@@ -94,7 +101,7 @@ class AgoraMessageListViewController extends AgoraBaseController {
   }
 
   // load message message
-  Future<void> loadMoreMessage([int count = 10]) async {
+  Future<void> loadMoreMessage([int count = 20]) async {
     if (_loading) return;
     _loading = true;
     if (!_hasMore) return;
@@ -145,12 +152,12 @@ class AgoraMessageListViewController extends AgoraBaseController {
     do {
       index = _newList.indexWhere((element) => msgId == element.msgId);
       if (index > -1) {
-        _newList[index] = _newList[index].copyWith(message);
+        _newList[index] = _newList[index].copyWithMsg(message);
         break;
       }
       index = _oldList.indexWhere((element) => msgId == element.msgId);
       if (index > -1) {
-        _oldList[index] = _oldList[index].copyWith(message);
+        _oldList[index] = _oldList[index].copyWithMsg(message);
       }
     } while (false);
     if (index > -1) {
@@ -186,18 +193,20 @@ class AgoraMessageListViewController extends AgoraBaseController {
   void _updateMessageItems(List<ChatMessage> list) {
     bool hasChange = false;
 
-    for (var item in list) {
+    for (var message in list) {
       int index = -1;
       do {
-        index = _newList.indexWhere((element) => item.msgId == element.msgId);
+        index =
+            _newList.indexWhere((element) => message.msgId == element.msgId);
         if (index > -1) {
-          _newList[index] = AgoraMessageListItemModel(item);
+          _newList[index] = AgoraMessageListItemModel(message);
           hasChange = true;
           break;
         }
-        index = _oldList.indexWhere((element) => item.msgId == element.msgId);
+        index =
+            _oldList.indexWhere((element) => message.msgId == element.msgId);
         if (index > -1) {
-          _oldList[index] = AgoraMessageListItemModel(item);
+          _oldList[index] = AgoraMessageListItemModel(message);
         }
         hasChange = true;
       } while (false);

@@ -7,7 +7,11 @@ class AgoraMessageListItemModel {
 
   String get msgId => message.msgId;
 
-  AgoraMessageListItemModel copyWith(ChatMessage message) {
+  AgoraMessageListItemModel copyWithMsg(ChatMessage message) {
+    return AgoraMessageListItemModel(message, needTime);
+  }
+
+  AgoraMessageListItemModel copyWithNeedTime(bool needTime) {
     return AgoraMessageListItemModel(message, needTime);
   }
 }
