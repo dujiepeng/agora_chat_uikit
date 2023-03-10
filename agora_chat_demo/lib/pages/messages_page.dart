@@ -15,19 +15,15 @@ class MessagePage extends StatefulWidget {
 
 class _MessagePageState extends State<MessagePage> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        shadowColor: Theme.of(context).appBarShadowColor,
-        backgroundColor: Theme.of(context).appBarBackgroundColor,
-        title: Text(
-          widget.conversation.id,
-        ),
-      ),
-      body: AgoraMessageListView(
-        key: const Key("messageList"),
-        conversation: widget.conversation,
-      ),
+    return AgoraMessagesPage(
+      conversation: widget.conversation,
+      titleAvatarBuilder: (context, conversation) {},
     );
   }
 }

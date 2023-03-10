@@ -35,15 +35,15 @@ dependencies:
   agora_chat_uikit:
     path: ../agora_chat_uikit
 
-  # agora_chat_sdk: ^1.0.9
-  agora_chat_sdk:
-    path: ../../agora_chat_sdk/
+  agora_chat_sdk: ^1.1.0
 
   image_picker: ^0.8.6+4
 
   file_picker: ^4.6.1
 
   common_utils: ^2.1.0
+
+  shared_preferences: ^2.0.18
 
 
   # The following adds the Cupertino Icons font to your application.

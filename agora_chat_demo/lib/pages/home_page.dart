@@ -1,8 +1,10 @@
+import 'package:agora_chat_demo/tools/tool.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:flutter/material.dart';
 
 import '../tools/image_loader.dart';
-import 'contacts_page.dart';
+import 'contact_page/contacts_page.dart';
+
 import 'conversations_page.dart';
 import 'settings_page.dart';
 
@@ -17,21 +19,25 @@ class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
   int _currentIndex = 0;
   int _unreadCount = 0;
-  bool _newApplyReminder = false;
 
   late List<Widget> _pages;
 
   @override
   void initState() {
     super.initState();
+
     _pages = [
       ConversationsPage(
           onUnreadCountChanged: (p0) => setState(() => _unreadCount = p0)),
-      ContactsPage(
-        onUnreadFlagChange: (p0) => setState(() => _newApplyReminder = p0),
-      ),
+      const ContactsPage(),
       const SettingsPage(),
     ];
+
+    DemoDataStore.shared.requestCount.addListener(_requestCountChanged);
+  }
+
+  void _requestCountChanged() {
+    setState(() {});
   }
 
   @override
@@ -53,7 +59,8 @@ class _HomePageState extends State<HomePage>
               selected: _currentIndex == 0),
           getBarItem(
               imageName: "bar_contact.png",
-              unreadCount: _newApplyReminder ? -1 : 0,
+              unreadCount:
+                  DemoDataStore.shared.requestCount.value != 0 ? -1 : 0,
               selected: _currentIndex == 1),
           getBarItem(imageName: "bar_me.png", selected: _currentIndex == 2),
         ],
@@ -86,9 +93,7 @@ class _HomePageState extends State<HomePage>
               top: unreadCount < 0 ? 0 : null,
               left: unreadCount > 0 ? 20 : null,
               bottom: unreadCount > 0 ? 15 : null,
-              child: AgoraBadgeWidget(
-                unreadCount: unreadCount,
-              ),
+              child: AgoraBadgeWidget(unreadCount),
             ),
           ],
         ),
@@ -96,6 +101,12 @@ class _HomePageState extends State<HomePage>
       tooltip: '',
       label: title,
     );
+  }
+
+  @override
+  void dispose() {
+    DemoDataStore.shared.requestCount.removeListener(_requestCountChanged);
+    super.dispose();
   }
 
   @override

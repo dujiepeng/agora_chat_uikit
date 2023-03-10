@@ -28,17 +28,13 @@ class AgoraMessageListTextItem extends StatelessWidget {
     ChatMessage message = model.message;
     bool isLeft = message.direction == MessageDirection.RECEIVE;
     ChatTextMessageBody body = message.body as ChatTextMessageBody;
-    // Widget content = SelectableText(
-    //   body.content,
-    //   style: TextStyle(
-    //     color: isLeft ? Colors.black : Colors.white,
-    //   ),
-    // );
 
     Widget content = Text(
       body.content,
       style: TextStyle(
         color: isLeft ? Colors.black : Colors.white,
+        fontSize: 15,
+        fontWeight: FontWeight.w400,
       ),
     );
     return AgoraMessageBubble(

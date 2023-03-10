@@ -18,7 +18,9 @@ class AgoraMessagesPage extends StatefulWidget {
     this.onBubbleDoubleTap,
     this.avatarBuilder,
     this.showNameBuilder,
+    this.titleAvatarBuilder,
     this.moreItems,
+    this.userInfo,
   });
 
   final AppBar? appBar;
@@ -30,6 +32,8 @@ class AgoraMessagesPage extends StatefulWidget {
   final AgoraWidgetBuilder? avatarBuilder;
   final AgoraWidgetBuilder? showNameBuilder;
   final List<AgoraBottomSheetItem>? moreItems;
+  final ChatUserInfo? userInfo;
+  final AgoraConversationWidgetBuilder? titleAvatarBuilder;
 
   @override
   State<AgoraMessagesPage> createState() => _AgoraMessagesPageState();
@@ -38,9 +42,11 @@ class AgoraMessagesPage extends StatefulWidget {
 class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
   late final AgoraMessageListViewController msgListViewController;
   final ImagePicker _picker = ImagePicker();
+  ChatUserInfo? _userInfo;
   @override
   void initState() {
     super.initState();
+    _userInfo = widget.userInfo;
     msgListViewController = AgoraMessageListViewController(widget.conversation);
     msgListViewController.markAllMessagesAsRead();
   }
@@ -66,18 +72,9 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
             backgroundColor: Colors.transparent,
             title: Row(
               children: [
-                FutureBuilder(
-                  builder: (context, snapshot) {
-                    return Container(
-                      width: 40,
-                      height: 40,
-                      color: Colors.red,
-                    );
-                  },
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
+                widget.titleAvatarBuilder?.call(context, widget.conversation) ??
+                    AgoraImageLoader.defaultAvatar(),
+                const SizedBox(width: 10),
                 Text(
                   widget.conversation.id,
                   style: Theme.of(context).appBarTitleTextStyle,
@@ -132,7 +129,7 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
     if (message.body.type == MessageType.TXT) {
       list.add(
         AgoraBottomSheetItem(
-          label: "Copy",
+          "Copy",
           onTap: () {
             ChatTextMessageBody body = message.body as ChatTextMessageBody;
             Clipboard.setData(ClipboardData(text: body.content));
@@ -143,7 +140,7 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
     }
     list.add(
       AgoraBottomSheetItem(
-        label: "Delete",
+        "Delete",
         onTap: () {
           msgListViewController.removeMessage(message);
           return Navigator.of(context).pop(true);
@@ -154,7 +151,7 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
         180 * 1000) {
       list.add(
         AgoraBottomSheetItem(
-          label: "Unsend",
+          "Unsend",
           labelStyle: const TextStyle(
               color: Color.fromRGBO(255, 20, 204, 1),
               fontWeight: FontWeight.w400,
@@ -175,24 +172,18 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
     AgoraBottomSheet(
       items: widget.moreItems ??
           [
-            AgoraBottomSheetItem(
-                label: "Camera",
-                onTap: () {
-                  Navigator.of(context).pop();
-                  _takePhoto();
-                }),
-            AgoraBottomSheetItem(
-                label: "Album",
-                onTap: () {
-                  Navigator.of(context).pop();
-                  _openImagePicker();
-                }),
-            AgoraBottomSheetItem(
-                label: "Files",
-                onTap: () {
-                  Navigator.of(context).pop();
-                  _openFilePicker();
-                }),
+            AgoraBottomSheetItem("Camera", onTap: () {
+              Navigator.of(context).pop();
+              _takePhoto();
+            }),
+            AgoraBottomSheetItem("Album", onTap: () {
+              Navigator.of(context).pop();
+              _openImagePicker();
+            }),
+            AgoraBottomSheetItem("Files", onTap: () {
+              Navigator.of(context).pop();
+              _openFilePicker();
+            }),
           ],
     ).show(context);
   }

@@ -50,6 +50,7 @@ class _AgoraSwipeAutoCloseBehaviorState
 
   @override
   void didUpdateWidget(covariant AgoraSwipeAutoCloseBehavior oldWidget) {
+    _lastController = null;
     super.didUpdateWidget(oldWidget);
   }
 

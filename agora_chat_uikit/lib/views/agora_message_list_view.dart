@@ -320,7 +320,7 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
-
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
     _centerKey = ValueKey(widget.conversation.id);
     _scrollController.addListener(scrollListener);
 
@@ -394,36 +394,34 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
   Widget build(BuildContext context) {
     List<AgoraMessageListItemModel> oldList = controller._oldList;
     List<AgoraMessageListItemModel> newList = controller._newList;
-    return Opacity(
-      opacity: controller.hasFirstLoad ? 1 : 0,
-      child: Scrollbar(
-        child: CustomScrollView(
-          center: _centerKey,
-          physics: const AlwaysScrollableScrollPhysics(),
-          controller: _scrollController,
-          slivers: [
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  return messageWidget(oldList[oldList.length - 1 - index]);
-                },
-                childCount: oldList.length,
-              ),
+
+    return Scrollbar(
+      child: CustomScrollView(
+        center: _centerKey,
+        physics: const AlwaysScrollableScrollPhysics(),
+        controller: _scrollController,
+        slivers: [
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return messageWidget(oldList[oldList.length - 1 - index]);
+              },
+              childCount: oldList.length,
             ),
-            SliverPadding(
-              padding: EdgeInsets.zero,
-              key: _centerKey,
+          ),
+          SliverPadding(
+            padding: EdgeInsets.zero,
+            key: _centerKey,
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return messageWidget(newList[index]);
+              },
+              childCount: newList.length,
             ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  return messageWidget(newList[index]);
-                },
-                childCount: newList.length,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

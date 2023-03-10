@@ -2,9 +2,9 @@ import 'package:agora_chat_uikit/agora_chat_uikit_theme.dart';
 import 'package:flutter/material.dart';
 
 class AgoraBadgeWidget extends StatelessWidget {
-  const AgoraBadgeWidget({
+  const AgoraBadgeWidget(
+    this.unreadCount, {
     super.key,
-    required this.unreadCount,
     this.maxCount = 99,
   });
   final int unreadCount;

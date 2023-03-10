@@ -76,8 +76,8 @@ class AgoraBottomSheet {
 }
 
 class AgoraBottomSheetItem {
-  AgoraBottomSheetItem({
-    required this.label,
+  AgoraBottomSheetItem(
+    this.label, {
     required this.onTap,
     this.backgroundColor = const Color.fromRGBO(250, 250, 250, 1),
     this.labelStyle,

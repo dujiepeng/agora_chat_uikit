@@ -1,7 +1,8 @@
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 
 import 'package:flutter/material.dart';
+
+import 'messages_page.dart';
 
 class ConversationsPage extends StatefulWidget {
   const ConversationsPage({super.key, this.onUnreadCountChanged});
@@ -45,80 +46,12 @@ class _ConversationsPageState extends State<ConversationsPage> {
         backgroundColor: Theme.of(context).appBarBackgroundColor,
         title: const Text('Chats',
             style: TextStyle(
-                fontSize: 25, fontWeight: FontWeight.w900, color: Colors.blue)),
+                fontSize: 25,
+                fontWeight: FontWeight.w900,
+                color: Color.fromRGBO(0, 95, 255, 1))),
         actions: [
           TextButton(
-              onPressed: () async {
-                setState(() {
-                  showMenu(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      context: context,
-                      elevation: 1,
-                      color: Colors.black,
-                      position: const RelativeRect.fromLTRB(0, 70, -1, 0),
-                      items: [
-                        PopupMenuItem(
-                          onTap: () async {
-                            conversationListController.loadAllConversations();
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const <Widget>[
-                              Icon(
-                                Icons.contact_mail,
-                                color: Colors.white,
-                              ),
-                              Text(
-                                "刷新列表",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          onTap: () async {
-                            ChatConversation? a = await ChatClient
-                                .getInstance.chatManager
-                                .getConversation("du100");
-                            conversationListController.conversationList = [a!];
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const <Widget>[
-                              Icon(
-                                Icons.contact_mail,
-                                color: Colors.white,
-                              ),
-                              Text(
-                                "插入一项",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          onTap: () async {
-                            conversationListController.deleteAllConversations();
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const <Widget>[
-                              Icon(
-                                Icons.contact_mail,
-                                color: Colors.white,
-                              ),
-                              Text(
-                                "清空列表",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ]);
-                });
-              },
+              onPressed: showMenu,
               child: const Icon(
                 Icons.add,
                 color: Colors.black,
@@ -128,7 +61,33 @@ class _ConversationsPageState extends State<ConversationsPage> {
       ),
       body: AgoraConversationListView(
         conversationListController: conversationListController,
+        onItemTap: (conversation) {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) {
+              return MessagePage(
+                conversation: conversation,
+              );
+            },
+          ));
+        },
       ),
     );
+  }
+
+  void showMenu() async {
+    await AgoraBottomSheet(titleLabel: "Create", items: [
+      AgoraBottomSheetItem(
+        "New Conversation",
+        onTap: () {},
+      ),
+      AgoraBottomSheetItem(
+        "Create a group",
+        onTap: () {},
+      ),
+      AgoraBottomSheetItem(
+        "Add contact",
+        onTap: () {},
+      ),
+    ]).show(context);
   }
 }

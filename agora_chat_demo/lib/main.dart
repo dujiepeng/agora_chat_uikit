@@ -1,3 +1,4 @@
+import 'package:agora_chat_demo/tools/tool.dart';
 import 'package:flutter/material.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
@@ -10,6 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   var options = ChatOptions(appKey: "easemob-demo#flutter", debugModel: true);
   await ChatClient.getInstance.init(options);
+  await DemoDataStore.shared.init();
   runApp(const MyApp());
 }
 

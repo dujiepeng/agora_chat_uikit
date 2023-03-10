@@ -196,8 +196,8 @@ class AgoraConversationListViewState extends State<AgoraConversationListView> {
 
     return AgoraSwipeAutoCloseBehavior(
       child: _tmpList.isEmpty
-          ? const Center(
-              child: Text("No conversations"),
+          ? Center(
+              child: AgoraImageLoader.loadImage("conversation_empty.png"),
             )
           : ListView.custom(
               scrollDirection: Axis.vertical,
@@ -230,12 +230,10 @@ class AgoraConversationListViewState extends State<AgoraConversationListView> {
                               return await AgoraBottomSheet(
                                     titleLabel: "删除会话",
                                     items: [
-                                      AgoraBottomSheetItem(
-                                          label: "确定",
+                                      AgoraBottomSheetItem("确定",
                                           onTap: () =>
                                               Navigator.of(context).pop(true)),
-                                      AgoraBottomSheetItem(
-                                          label: "取消",
+                                      AgoraBottomSheetItem("取消",
                                           onTap: () =>
                                               Navigator.of(context).pop(false)),
                                     ],

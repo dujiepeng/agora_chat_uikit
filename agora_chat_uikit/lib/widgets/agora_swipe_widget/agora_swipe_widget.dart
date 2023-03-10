@@ -71,6 +71,7 @@ class _AgoraSwipeWidgetState extends State<AgoraSwipeWidget>
   @override
   void didUpdateWidget(covariant AgoraSwipeWidget oldWidget) {
     updateItem();
+    // controller?.dxNotifier = ValueNotifier(0);
     super.didUpdateWidget(oldWidget);
   }
 

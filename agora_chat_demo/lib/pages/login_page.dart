@@ -1,4 +1,5 @@
 import 'package:agora_chat_demo/tools/image_loader.dart';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

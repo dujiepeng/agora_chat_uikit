@@ -53,16 +53,15 @@ class AgoraConversationListTile extends StatelessWidget {
                   builder: (context) {
                     return Text(
                       msg?.summary ?? "",
-                      style: const TextStyle(fontSize: 14),
+                      style: const TextStyle(
+                          fontSize: 14, overflow: TextOverflow.ellipsis),
                     );
                   },
                 )),
                 FutureBuilder<int>(
                   future: conversation.unreadCount(),
                   builder: (context, snapshot) {
-                    return AgoraBadgeWidget(
-                      unreadCount: snapshot.data ?? 0,
-                    );
+                    return AgoraBadgeWidget(snapshot.data ?? 0);
                   },
                 )
               ]),

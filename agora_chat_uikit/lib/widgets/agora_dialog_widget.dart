@@ -20,7 +20,7 @@ class AgoraDialog {
           onTap: item.onTap,
           child: Container(
             width: 116,
-            height: 36,
+            height: 40,
             decoration: BoxDecoration(
               color: item.backgroundColor,
               borderRadius: BorderRadius.circular(30),
@@ -29,7 +29,7 @@ class AgoraDialog {
               child: Text(
                 item.label,
                 style: item.labelStyle ??
-                    Theme.of(context).agoraBottomSheetItemLabelDefaultStyle,
+                    Theme.of(context).agoraDialogItemLabelDefaultStyle,
               ),
             ),
           ),
@@ -41,19 +41,25 @@ class AgoraDialog {
       context: context,
       builder: (context) {
         return AlertDialog(
+          contentPadding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
           titlePadding: const EdgeInsets.fromLTRB(0, 20, 0, 12),
-          contentPadding: const EdgeInsets.all(40),
           actionsOverflowAlignment: OverflowBarAlignment.center,
-          actionsOverflowButtonSpacing: 20,
+          // actionsOverflowButtonSpacing: 50,
           actionsPadding: const EdgeInsets.fromLTRB(0, 12, 0, 20),
-          actionsAlignment: MainAxisAlignment.center,
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
           title: Center(
             child: Text(titleLabel),
           ),
-          content: content != null ? Text(content!) : null,
+          content: content != null
+              ? Text(
+                  content!,
+                  style: Theme.of(context).agoraDialogContentDefaultStyle,
+                  textAlign: TextAlign.center,
+                )
+              : null,
           actions: list,
         );
       },

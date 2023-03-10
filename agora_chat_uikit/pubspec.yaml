@@ -14,9 +14,10 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
-  # agora_chat_sdk: ^1.0.9
-  agora_chat_sdk:
-    path: ../../agora_chat_sdk/
+
+  agora_chat_sdk: ^1.1.0
+  # agora_chat_sdk:
+  #   path: ../../agora_chat_sdk/
 
   image_picker: ^0.8.6+4
 
@@ -34,11 +35,10 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   uses-material-design: true
-  generate: true
   # To add assets to your package, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - images/
+ 
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages

@@ -15,4 +15,11 @@ extension AgoraUIKitThemeData on ThemeData {
       const TextStyle(color: Colors.grey, fontSize: 14);
   TextStyle get agoraBottomSheetItemLabelDefaultStyle => const TextStyle(
       fontSize: 18, fontWeight: FontWeight.w400, color: Colors.black);
+  TextStyle get agoraDialogItemLabelDefaultStyle => const TextStyle(
+      fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black);
+  TextStyle get agoraDialogContentDefaultStyle => const TextStyle(
+        fontSize: 14,
+        color: Color.fromRGBO(108, 113, 146, 1),
+        height: 2,
+      );
 }

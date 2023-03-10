@@ -17,6 +17,7 @@ export 'pages/agora_messages_page.dart';
 
 export 'tools/agora_extension.dart';
 export 'tools/agora_tools.dart';
+export 'tools/agora_image_loader.dart';
 
 export 'views/agora_contact_list_view.dart';
 export 'views/agora_message_list_view.dart';
@@ -36,13 +37,22 @@ export 'widgets/agora_message_list_item/agora_message_list_image_item.dart';
 export 'widgets/agora_message_list_item//agora_message_list_file_item.dart';
 export 'widgets/agora_message_list_item/agora_message_list_voice_item.dart';
 
+class AgoraChatUIKitSettings {
+  AgoraChatUIKitSettings({
+    this.enableUserData = true,
+  });
+  final bool enableUserData;
+}
+
 class AgoraChatUIKit extends StatefulWidget {
   const AgoraChatUIKit({
     required this.child,
+    this.settings,
     super.key,
   });
 
   final Widget child;
+  final AgoraChatUIKitSettings? settings;
 
   @override
   State<AgoraChatUIKit> createState() => AgoraChatUIKitState();
@@ -50,7 +60,6 @@ class AgoraChatUIKit extends StatefulWidget {
   static AgoraChatUIKitState of(BuildContext context) {
     AgoraChatUIKitState? state;
     state = context.findAncestorStateOfType<AgoraChatUIKitState>();
-
     assert(
       state != null,
       'You must have a AgoraChatUIKit widget at the top of you widget tree',
@@ -63,9 +72,20 @@ class AgoraChatUIKit extends StatefulWidget {
 class AgoraChatUIKitState extends State<AgoraChatUIKit> {
   String? _userId;
 
+  Future<ChatUserInfo?> get userInfo => _getUserInfo();
+
+  Future<ChatUserInfo?> _getUserInfo() async {
+    return ChatClient.getInstance.userInfoManager
+        .fetchOwnInfo(expireTime: 1800);
+  }
+
   @override
   void initState() {
     super.initState();
+    assert(
+      ChatClient.getInstance.options != null,
+      'You must has init AgoraChat SDK.',
+    );
     ChatClient.getInstance.startCallback();
     _userId = ChatClient.getInstance.currentUserId;
   }
