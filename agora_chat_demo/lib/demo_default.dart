@@ -17,6 +17,7 @@ Widget userInfoAvatar(ChatUserInfo info, {double size = 30}) {
         ? AgoraImageLoader.defaultAvatar()
         : FadeInImage(
             placeholder: AgoraImageLoader.assetImage("avatar.png"),
+            // use in local, in your app, need server uri.
             image: NetworkImage(info.avatarUrl ?? ""),
             placeholderErrorBuilder: (context, error, stackTrace) {
               return AgoraImageLoader.defaultAvatar();

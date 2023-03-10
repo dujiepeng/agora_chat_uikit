@@ -80,10 +80,18 @@ class AgoraMessageListImageItem extends StatelessWidget {
           ),
           fit: BoxFit.fill);
     } else {
-      content = FadeInImage.assetNetwork(
-          placeholder: "loading",
-          image: body.thumbnailRemotePath!,
-          fit: BoxFit.fill);
+      content = Container(
+        color: const Color.fromRGBO(242, 242, 242, 1),
+        child: FadeInImage(
+            placeholderFit: BoxFit.contain,
+            placeholder: AgoraImageLoader.assetImage("download_img.png"),
+            image: NetworkImage(body.thumbnailRemotePath!),
+            imageErrorBuilder: (context, error, stackTrace) {
+              return AgoraImageLoader.loadImage("download_img_failed.png",
+                  fit: BoxFit.contain);
+            },
+            fit: BoxFit.fill),
+      );
     }
 
     return AgoraMessageBubble(
