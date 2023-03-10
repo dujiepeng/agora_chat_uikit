@@ -62,12 +62,14 @@ class AgoraMessageBubble extends StatelessWidget {
     List<Widget> insideBubbleWidgets = [];
 
     if (nicknameBuilder != null) {
-      insideBubbleWidgets.add(Container(
-        constraints: const BoxConstraints(maxWidth: 260),
-        child: nicknameBuilder!.call(context, message.from!),
-      ));
-      insideBubbleWidgets.add(const SizedBox(height: 6));
-      insideBubbleWidgets.add(content);
+      insideBubbleWidgets.add(
+        Container(
+          constraints: const BoxConstraints(maxWidth: 260),
+          child: nicknameBuilder!.call(context, message.from!),
+        ),
+      );
+
+      insideBubbleWidgets.add(Flexible(child: content));
 
       content = Column(
         mainAxisSize: MainAxisSize.min,
@@ -111,7 +113,7 @@ class AgoraMessageBubble extends StatelessWidget {
     }
 
     content = Padding(
-      padding: EdgeInsets.fromLTRB(15, 7.5, isLeft ? 7.5 : 15, 7.5),
+      padding: EdgeInsets.fromLTRB(15, 15, isLeft ? 7.5 : 15, 15),
       child: content,
     );
 
@@ -128,7 +130,7 @@ class AgoraMessageBubble extends StatelessWidget {
         children: [
           Center(
             child: SizedBox(
-              height: 40,
+              height: 20,
               child: Text(
                 AgoraTimeTool.timeStrByMs(message.serverTime),
                 style: Theme.of(context).agoraMessagesListItemTs,

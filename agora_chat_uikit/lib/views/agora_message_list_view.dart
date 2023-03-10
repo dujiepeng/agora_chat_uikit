@@ -101,7 +101,7 @@ class AgoraMessageListViewController extends AgoraBaseController {
   }
 
   // load message message
-  Future<void> loadMoreMessage([int count = 20]) async {
+  Future<void> loadMoreMessage([int count = 15]) async {
     if (_loading) return;
     _loading = true;
     if (!_hasMore) return;
@@ -291,7 +291,7 @@ class AgoraMessageListView extends StatefulWidget {
     this.onBubbleLongPress,
     this.onBubbleDoubleTap,
     this.avatarBuilder,
-    this.showNameBuilder,
+    this.nicknameBuilder,
   });
 
   final ChatConversation conversation;
@@ -301,7 +301,7 @@ class AgoraMessageListView extends StatefulWidget {
   final AgoraMessageTapBuilder? onBubbleLongPress;
   final AgoraMessageTapBuilder? onBubbleDoubleTap;
   final AgoraWidgetBuilder? avatarBuilder;
-  final AgoraWidgetBuilder? showNameBuilder;
+  final AgoraWidgetBuilder? nicknameBuilder;
 
   @override
   State<AgoraMessageListView> createState() => _AgoraMessageListViewState();
@@ -320,7 +320,7 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
+
     _centerKey = ValueKey(widget.conversation.id);
     _scrollController.addListener(scrollListener);
 
@@ -333,14 +333,13 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
       moveToEnd: _moveToEnd,
       reloadData: _reloadData,
     );
-
     controller.loadMoreMessage();
   }
 
   Future<void> _moveToEnd([int milliseconds = 50]) async {
     setState(() {});
-    if (_scrollController.position.extentAfter > 200) {
-      _scrollController.jumpTo(200);
+    if (_scrollController.position.extentAfter > 100) {
+      _scrollController.jumpTo(100);
     }
 
     _scrollToEnd(milliseconds);
@@ -348,18 +347,19 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
 
   Future<void> _reloadData() async {
     setState(() {});
-    if (_scrollController.position.extentAfter == 0) {
-      await _scrollToEnd(100);
-    }
+    _scrollToEnd();
   }
 
-  Future<void> _scrollToEnd([int milliseconds = 50]) async {
-    await Future.delayed(Duration(milliseconds: milliseconds));
-    await _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
-      duration: const Duration(milliseconds: 80),
-      curve: Curves.easeOutQuart,
-    );
+  Future<void> _scrollToEnd(
+      [int milliseconds = 100, bool force = false]) async {
+    if (_scrollController.position.extentAfter == 0 || force) {
+      await Future.delayed(Duration(milliseconds: milliseconds));
+      await _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 80),
+        curve: Curves.easeOutQuart,
+      );
+    }
   }
 
   @override
@@ -398,7 +398,6 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
     return Scrollbar(
       child: CustomScrollView(
         center: _centerKey,
-        physics: const AlwaysScrollableScrollPhysics(),
         controller: _scrollController,
         slivers: [
           SliverList(
@@ -436,6 +435,8 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
             return AgoraMessageListTextItem(
               model: model,
               onTap: widget.onTap,
+              avatarBuilder: widget.avatarBuilder,
+              nicknameBuilder: widget.nicknameBuilder,
               onBubbleDoubleTap: widget.onBubbleDoubleTap,
               onBubbleLongPress: _longPressed,
               onResendTap: () => controller.sendMessage(message),
@@ -444,6 +445,8 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
             return AgoraMessageListImageItem(
               model: model,
               onTap: widget.onTap,
+              avatarBuilder: widget.avatarBuilder,
+              nicknameBuilder: widget.nicknameBuilder,
               onBubbleDoubleTap: widget.onBubbleDoubleTap,
               onBubbleLongPress: _longPressed,
               onResendTap: () => controller.sendMessage(message),
@@ -452,6 +455,8 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
             return AgoraMessageListFileItem(
               model: model,
               onTap: widget.onTap,
+              avatarBuilder: widget.avatarBuilder,
+              nicknameBuilder: widget.nicknameBuilder,
               onBubbleDoubleTap: widget.onBubbleDoubleTap,
               onBubbleLongPress: _longPressed,
               onResendTap: () => controller.sendMessage(message),
@@ -460,6 +465,8 @@ class _AgoraMessageListViewState extends State<AgoraMessageListView>
             return AgoraMessageListVoiceItem(
               model: model,
               onTap: widget.onTap,
+              avatarBuilder: widget.avatarBuilder,
+              nicknameBuilder: widget.nicknameBuilder,
               onBubbleDoubleTap: widget.onBubbleDoubleTap,
               onBubbleLongPress: _longPressed,
               onResendTap: () => controller.sendMessage(message),

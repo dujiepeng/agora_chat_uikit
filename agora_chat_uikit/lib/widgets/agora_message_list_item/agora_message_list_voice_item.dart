@@ -14,7 +14,7 @@ class AgoraMessageListVoiceItem extends StatelessWidget {
     this.onBubbleDoubleTap,
     this.onResendTap,
     this.avatarBuilder,
-    this.showNameBuilder,
+    this.nicknameBuilder,
   });
 
   final AgoraMessageListItemModel model;
@@ -23,7 +23,7 @@ class AgoraMessageListVoiceItem extends StatelessWidget {
   final AgoraMessageTapBuilder? onBubbleDoubleTap;
   final VoidCallback? onResendTap;
   final AgoraWidgetBuilder? avatarBuilder;
-  final AgoraWidgetBuilder? showNameBuilder;
+  final AgoraWidgetBuilder? nicknameBuilder;
 
   final bool isPlay;
 
@@ -68,7 +68,7 @@ class AgoraMessageListVoiceItem extends StatelessWidget {
       onBubbleLongPress: onBubbleLongPress,
       onTap: onTap,
       avatarBuilder: avatarBuilder,
-      nicknameBuilder: showNameBuilder,
+      nicknameBuilder: nicknameBuilder,
       onResendTap: onResendTap,
     );
   }

@@ -34,8 +34,8 @@ class _ConversationsPageState extends State<ConversationsPage> {
   }
 
   void unreadCountChange() {
-    widget.onUnreadCountChanged
-        ?.call(conversationListController.totalUnreadCount);
+    widget.onUnreadCountChanged?.call(
+        AgoraChatUIKit.of(context).conversationListController.totalUnreadCount);
   }
 
   @override
@@ -60,7 +60,6 @@ class _ConversationsPageState extends State<ConversationsPage> {
         ],
       ),
       body: AgoraConversationListView(
-        conversationListController: conversationListController,
         onItemTap: (conversation) {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) {

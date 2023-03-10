@@ -1,4 +1,5 @@
 import 'package:agora_chat_demo/demo_default.dart';
+import 'package:agora_chat_demo/pages/messages_page.dart';
 import 'package:agora_chat_demo/tools/tool.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
@@ -84,7 +85,21 @@ class _ContactInfoState extends State<ContactInfo> {
                   ),
                   const Divider(height: 20, color: Colors.transparent),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      ChatClient.getInstance.chatManager
+                          .getConversation(widget.userInfo.userId)
+                          .then((value) {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) {
+                            return MessagePage(conversation: value!);
+                          },
+                        )).then((value) {
+                          AgoraChatUIKit.of(context)
+                              .conversationListController
+                              .loadAllConversations();
+                        });
+                      });
+                    },
                     child: Container(
                       width: 48,
                       height: 48,

@@ -3,6 +3,8 @@ library agora_chat_uikit;
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:flutter/widgets.dart';
 
+import 'views/agora_conversation_list_view.dart';
+
 export 'agora_chat_uikit_theme.dart';
 export 'agora_chat_define.dart';
 export 'controllers/agora_chat_uikit_controller.dart';
@@ -19,7 +21,6 @@ export 'tools/agora_extension.dart';
 export 'tools/agora_tools.dart';
 export 'tools/agora_image_loader.dart';
 
-export 'views/agora_contact_list_view.dart';
 export 'views/agora_message_list_view.dart';
 export 'views/agora_conversation_list_view.dart';
 
@@ -70,14 +71,7 @@ class AgoraChatUIKit extends StatefulWidget {
 }
 
 class AgoraChatUIKitState extends State<AgoraChatUIKit> {
-  String? _userId;
-
-  Future<ChatUserInfo?> get userInfo => _getUserInfo();
-
-  Future<ChatUserInfo?> _getUserInfo() async {
-    return ChatClient.getInstance.userInfoManager
-        .fetchOwnInfo(expireTime: 1800);
-  }
+  AgoraConversationListController? _controller;
 
   @override
   void initState() {
@@ -87,7 +81,11 @@ class AgoraChatUIKitState extends State<AgoraChatUIKit> {
       'You must has init AgoraChat SDK.',
     );
     ChatClient.getInstance.startCallback();
-    _userId = ChatClient.getInstance.currentUserId;
+  }
+
+  AgoraConversationListController get conversationListController {
+    _controller ??= AgoraConversationListController();
+    return _controller!;
   }
 
   @override
@@ -95,5 +93,8 @@ class AgoraChatUIKitState extends State<AgoraChatUIKit> {
     return widget.child;
   }
 
-  String? get currentUserId => _userId;
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }

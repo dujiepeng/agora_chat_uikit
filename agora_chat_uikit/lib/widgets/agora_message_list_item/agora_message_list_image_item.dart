@@ -13,7 +13,7 @@ class AgoraMessageListImageItem extends StatelessWidget {
     this.onBubbleDoubleTap,
     this.onResendTap,
     this.avatarBuilder,
-    this.showNameBuilder,
+    this.nicknameBuilder,
   });
 
   final AgoraMessageListItemModel model;
@@ -22,7 +22,7 @@ class AgoraMessageListImageItem extends StatelessWidget {
   final AgoraMessageTapBuilder? onBubbleDoubleTap;
   final VoidCallback? onResendTap;
   final AgoraWidgetBuilder? avatarBuilder;
-  final AgoraWidgetBuilder? showNameBuilder;
+  final AgoraWidgetBuilder? nicknameBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +92,7 @@ class AgoraMessageListImageItem extends StatelessWidget {
       onBubbleLongPress: onBubbleLongPress,
       onTap: onTap,
       avatarBuilder: avatarBuilder,
-      nicknameBuilder: showNameBuilder,
+      nicknameBuilder: nicknameBuilder,
       onResendTap: onResendTap,
       padding: EdgeInsets.zero,
       model: model,

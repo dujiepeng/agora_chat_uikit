@@ -18,7 +18,6 @@ class AgoraImageLoader {
   static Widget defaultAvatar({
     double width = 30,
     double height = 30,
-    bool? around,
   }) {
     return Container(
       width: width,

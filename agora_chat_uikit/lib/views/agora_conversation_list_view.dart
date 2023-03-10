@@ -6,19 +6,15 @@ import 'package:flutter/material.dart';
 
 import '../controllers/agora_base_controller.dart';
 
-typedef AgoraConversationSortHandle = Future<List<ChatConversation>> Function(
-    List<ChatConversation> beforeList);
-
 class AgoraConversationListController extends AgoraBaseController {
   AgoraConversationListController({
     super.key,
-    this.sortHandle,
   }) {
     _addListener();
     loadAllConversations();
   }
 
-  final AgoraConversationSortHandle? sortHandle;
+  AgoraConversationSortHandle? sortHandle;
 
   void loadAllConversations() async {
     List<ChatConversation> list =
@@ -99,7 +95,6 @@ class AgoraConversationListView extends StatefulWidget {
   const AgoraConversationListView({
     super.key,
     this.onItemTap,
-    this.conversationListController,
     this.controller,
     this.reverse = false,
     this.primary,
@@ -113,14 +108,13 @@ class AgoraConversationListView extends StatefulWidget {
     this.clipBehavior = Clip.hardEdge,
     this.itemBuilder,
     this.avatarBuilder,
-    this.showNameBuilder,
+    this.nicknameBuilder,
   });
 
-  final AgoraConversationListController? conversationListController;
   final ScrollController? controller;
   final AgoraConversationItemWidgetBuilder? itemBuilder;
   final AgoraConversationWidgetBuilder? avatarBuilder;
-  final AgoraConversationWidgetBuilder? showNameBuilder;
+  final AgoraConversationWidgetBuilder? nicknameBuilder;
 
   final bool reverse;
   final bool? primary;
@@ -156,8 +150,7 @@ class AgoraConversationListViewState extends State<AgoraConversationListView> {
   @override
   void initState() {
     super.initState();
-    controller =
-        widget.conversationListController ?? AgoraConversationListController();
+    controller = AgoraChatUIKit.of(context).conversationListController;
     _addDataSourceHandle();
   }
 

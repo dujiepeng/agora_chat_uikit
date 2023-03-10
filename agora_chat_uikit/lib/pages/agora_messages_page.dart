@@ -17,10 +17,10 @@ class AgoraMessagesPage extends StatefulWidget {
     this.onBubbleLongPress,
     this.onBubbleDoubleTap,
     this.avatarBuilder,
-    this.showNameBuilder,
+    this.nicknameBuilder,
     this.titleAvatarBuilder,
     this.moreItems,
-    this.userInfo,
+    this.messageListViewController,
   });
 
   final AppBar? appBar;
@@ -30,10 +30,10 @@ class AgoraMessagesPage extends StatefulWidget {
   final AgoraMessageTapBuilder? onBubbleLongPress;
   final AgoraMessageTapBuilder? onBubbleDoubleTap;
   final AgoraWidgetBuilder? avatarBuilder;
-  final AgoraWidgetBuilder? showNameBuilder;
+  final AgoraWidgetBuilder? nicknameBuilder;
   final List<AgoraBottomSheetItem>? moreItems;
-  final ChatUserInfo? userInfo;
   final AgoraConversationWidgetBuilder? titleAvatarBuilder;
+  final AgoraMessageListViewController? messageListViewController;
 
   @override
   State<AgoraMessagesPage> createState() => _AgoraMessagesPageState();
@@ -42,12 +42,13 @@ class AgoraMessagesPage extends StatefulWidget {
 class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
   late final AgoraMessageListViewController msgListViewController;
   final ImagePicker _picker = ImagePicker();
-  ChatUserInfo? _userInfo;
+
   @override
   void initState() {
     super.initState();
-    _userInfo = widget.userInfo;
-    msgListViewController = AgoraMessageListViewController(widget.conversation);
+
+    msgListViewController = widget.messageListViewController ??
+        AgoraMessageListViewController(widget.conversation);
     msgListViewController.markAllMessagesAsRead();
   }
 
@@ -89,6 +90,8 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
               child: AgoraMessageListView(
                 conversation: widget.conversation,
                 messageListViewController: msgListViewController,
+                avatarBuilder: widget.avatarBuilder,
+                nicknameBuilder: widget.nicknameBuilder,
                 onTap: (context, message) {
                   if (message.body.type == MessageType.VOICE) {
                     _voiceBubblePressed(message);

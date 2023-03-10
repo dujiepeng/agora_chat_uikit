@@ -1,4 +1,3 @@
-import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -12,9 +11,6 @@ class _SettingsPageState extends State<SettingsPage> {
   final items = List<String>.generate(20, (i) => 'Item ${i + 1}');
   @override
   Widget build(BuildContext context) {
-    AgoraChatUIKit.of(context).userInfo.then((value) {
-      debugPrint("userInfo");
-    });
     return Container();
   }
 }

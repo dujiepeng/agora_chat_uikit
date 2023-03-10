@@ -20,3 +20,6 @@ typedef AgoraConfirmDismissCallback = Future<bool> Function(
 
 typedef AgoraConversationItemWidgetBuilder = Widget? Function(
     BuildContext context, int index, ChatConversation conversation);
+
+typedef AgoraConversationSortHandle = Future<List<ChatConversation>> Function(
+    List<ChatConversation> beforeList);
