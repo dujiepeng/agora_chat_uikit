@@ -2,9 +2,11 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:flutter/material.dart';
 
+import 'tools/image_loader.dart';
+
 Widget defaultAvatar = AgoraImageLoader.defaultAvatar(width: 40, height: 40);
 
-Widget userInfoAvatar(ChatUserInfo info, {double size = 30}) {
+Widget userInfoAvatar(ChatUserInfo? info, {double size = 30}) {
   return Container(
     width: size,
     height: size,
@@ -13,12 +15,14 @@ Widget userInfoAvatar(ChatUserInfo info, {double size = 30}) {
       borderRadius: BorderRadius.all(Radius.circular(100)),
     )),
     clipBehavior: Clip.hardEdge,
-    child: info.avatarUrl == null
+    child: info?.avatarUrl == null
         ? AgoraImageLoader.defaultAvatar()
         : FadeInImage(
             placeholder: AgoraImageLoader.assetImage("avatar.png"),
             // use in local, in your app, need server uri.
-            image: NetworkImage(info.avatarUrl ?? ""),
+
+            image:
+                AssetImage(ImageLoader.getImg("avatar${info!.avatarUrl}.png")),
             placeholderErrorBuilder: (context, error, stackTrace) {
               return AgoraImageLoader.defaultAvatar();
             },

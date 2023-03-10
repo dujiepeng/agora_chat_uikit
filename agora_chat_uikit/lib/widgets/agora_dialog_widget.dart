@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class AgoraDialog {
   const AgoraDialog({
     required this.titleLabel,
+    this.titleStyle,
     required this.items,
     this.content,
   });
   final String titleLabel;
-  final String? content;
+  final Widget? content;
+  final TextStyle? titleStyle;
   final List<AgoraDialogItem> items;
 
   Future<T?>? show<T>(BuildContext context) {
@@ -19,7 +21,7 @@ class AgoraDialog {
         InkWell(
           onTap: item.onTap,
           child: Container(
-            width: 116,
+            width: 100,
             height: 40,
             decoration: BoxDecoration(
               color: item.backgroundColor,
@@ -44,22 +46,18 @@ class AgoraDialog {
           contentPadding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
           titlePadding: const EdgeInsets.fromLTRB(0, 20, 0, 12),
           actionsOverflowAlignment: OverflowBarAlignment.center,
-          // actionsOverflowButtonSpacing: 50,
           actionsPadding: const EdgeInsets.fromLTRB(0, 12, 0, 20),
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
           title: Center(
-            child: Text(titleLabel),
+            child: Text(
+              titleLabel,
+              style: titleStyle,
+            ),
           ),
-          content: content != null
-              ? Text(
-                  content!,
-                  style: Theme.of(context).agoraDialogContentDefaultStyle,
-                  textAlign: TextAlign.center,
-                )
-              : null,
+          content: content,
           actions: list,
         );
       },

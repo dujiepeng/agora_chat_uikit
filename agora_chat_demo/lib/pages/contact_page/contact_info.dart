@@ -155,7 +155,11 @@ class _ContactInfoState extends State<ContactInfo> {
                 onTap: () {
                   AgoraDialog(
                     titleLabel: showName,
-                    content: "Delete this contact and associated Chats.",
+                    content: Text(
+                      "Delete this contact and associated Chats.",
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).agoraDialogContentDefaultStyle,
+                    ),
                     items: [
                       AgoraDialogItem(
                           label: "Cancel",

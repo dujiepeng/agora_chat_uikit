@@ -6,7 +6,7 @@ import '../tools/image_loader.dart';
 import 'contact_page/contacts_page.dart';
 
 import 'conversations_page.dart';
-import 'settings_page.dart';
+import 'settings_page/settings_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
