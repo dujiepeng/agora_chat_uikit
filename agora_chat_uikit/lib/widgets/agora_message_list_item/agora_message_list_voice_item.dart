@@ -43,17 +43,33 @@ class AgoraMessageListVoiceItem extends StatelessWidget {
           height: 22,
           child: isPlay
               ? AgoraAnimWidget(
-                  images: [
-                    AgoraImageLoader.loadImage("voice_0.png",
-                        scale: isLeft ? 1 : -1),
-                    AgoraImageLoader.loadImage("voice_1.png",
-                        scale: isLeft ? 1 : -1),
-                    AgoraImageLoader.loadImage("voice_2.png",
-                        scale: isLeft ? 1 : -1),
+                  items: [
+                    Transform.scale(
+                        scaleX: isLeft ? 1 : -1,
+                        child: AgoraImageLoader.loadImage("voice_0.png",
+                            color: isLeft
+                                ? const Color.fromRGBO(169, 169, 169, 1)
+                                : Colors.white)),
+                    Transform.scale(
+                        scaleX: isLeft ? 1 : -1,
+                        child: AgoraImageLoader.loadImage("voice_1.png",
+                            color: isLeft
+                                ? const Color.fromRGBO(169, 169, 169, 1)
+                                : Colors.white)),
+                    Transform.scale(
+                        scaleX: isLeft ? 1 : -1,
+                        child: AgoraImageLoader.loadImage("voice_2.png",
+                            color: isLeft
+                                ? const Color.fromRGBO(169, 169, 169, 1)
+                                : Colors.white)),
                   ],
                 )
-              : AgoraImageLoader.loadImage("voice_2.png",
-                  scale: isLeft ? 1 : -1),
+              : Transform.scale(
+                  scaleX: isLeft ? 1 : -1,
+                  child: AgoraImageLoader.loadImage("voice_2.png",
+                      color: isLeft
+                          ? const Color.fromRGBO(169, 169, 169, 1)
+                          : Colors.white)),
         ),
         Container(
             constraints: const BoxConstraints(minWidth: 20),

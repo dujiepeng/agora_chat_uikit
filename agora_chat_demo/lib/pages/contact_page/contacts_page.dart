@@ -87,11 +87,11 @@ class _ContactsPageState extends State<ContactsPage>
               ),
               Tab(
                 child: SizedBox(
-                  width: 85,
+                  width: 80,
                   child: Stack(
                     children: [
                       Text("Requests",
-                          style: _controller.index == 2
+                          style: _controller.index == 1
                               ? selectedStyle
                               : unselectedStyle),
                       Positioned(

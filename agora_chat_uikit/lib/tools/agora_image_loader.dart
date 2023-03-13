@@ -7,7 +7,6 @@ class AgoraImageLoader {
     double? height,
     BoxFit fit = BoxFit.fill,
     Color? color,
-    double? scale,
   }) {
     return Image.asset(
       "images/$name",
@@ -16,7 +15,6 @@ class AgoraImageLoader {
       fit: fit,
       package: "agora_chat_uikit",
       color: color,
-      scale: scale,
     );
   }
 

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 class AgoraAnimWidget extends StatefulWidget {
   const AgoraAnimWidget({
     super.key,
-    required this.images,
-    this.duration = const Duration(milliseconds: 800),
+    required this.items,
+    this.duration = const Duration(milliseconds: 1000),
   });
-  final List<Image> images;
+  final List<Widget> items;
   final Duration duration;
 
   @override
@@ -24,7 +24,7 @@ class _AgoraAnimWidgetState extends State<AgoraAnimWidget>
     controller = AnimationController(vsync: this, duration: widget.duration)
       ..repeat();
     animation =
-        IntTween(begin: 0, end: widget.images.length - 1).animate(controller)
+        IntTween(begin: 0, end: widget.items.length - 1).animate(controller)
           ..addListener(() {
             setState(() {});
           });
@@ -32,7 +32,7 @@ class _AgoraAnimWidgetState extends State<AgoraAnimWidget>
 
   @override
   Widget build(BuildContext context) {
-    return widget.images[animation.value];
+    return widget.items[animation.value];
   }
 
   @override
