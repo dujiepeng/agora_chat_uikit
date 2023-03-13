@@ -1,6 +1,5 @@
 import 'package:agora_chat_demo/demo_default.dart';
 import 'package:agora_chat_demo/tools/tool.dart';
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:flutter/material.dart';
 
@@ -37,10 +36,7 @@ class _SettingsPageState extends State<SettingsPage> {
         slivers: [
           SliverAppBar(
             backgroundColor: const Color.fromRGBO(250, 250, 250, 1),
-            expandedHeight: 300,
-            floating: true,
-            pinned: true,
-            snap: true,
+            expandedHeight: 240,
             centerTitle: true,
             flexibleSpace: FlexibleSpaceBar(
                 background: Center(
@@ -76,28 +72,192 @@ class _SettingsPageState extends State<SettingsPage> {
             )),
           ),
           SliverList(
-            delegate: SliverChildListDelegate([
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Center(
-                        child: Text(
-                      "Mute Notifications",
+            delegate: SliverChildListDelegate(
+              [
+                Container(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  height: 32,
+                  color: const Color.fromRGBO(245, 245, 245, 1),
+                  child: Row(children: const [
+                    Text(
+                      "About",
                       style: TextStyle(
-                          color: Color.fromRGBO(51, 51, 51, 1),
-                          fontWeight: FontWeight.w600),
-                    )),
-                  ],
+                        color: Color.fromRGBO(153, 153, 153, 1),
+                        fontWeight: FontWeight.w400,
+                        fontSize: 13,
+                      ),
+                    )
+                  ]),
                 ),
-              ),
-              const Divider(height: 8),
-            ]),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  child: SizedBox(
+                    height: 60,
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Center(
+                            child: Text(
+                              "SDK Version",
+                              style: TextStyle(
+                                  color: Color.fromRGBO(51, 51, 51, 1),
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          Text(
+                            "v1.1.0",
+                            style: TextStyle(
+                                color: Color.fromRGBO(102, 102, 102, 1),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 13),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(height: 0.3),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  child: SizedBox(
+                    height: 60,
+                    child: Center(
+                        child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Center(
+                          child: Text(
+                            "UI Library Version",
+                            style: TextStyle(
+                                color: Color.fromRGBO(51, 51, 51, 1),
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        Text(
+                          "v0.1.0",
+                          style: TextStyle(
+                              color: Color.fromRGBO(102, 102, 102, 1),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 13),
+                        )
+                      ],
+                    )),
+                  ),
+                ),
+                const Divider(height: 0.3),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
+                  child: SizedBox(
+                    height: 60,
+                    child: Center(
+                        child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Center(
+                          child: Text(
+                            "Legals n' Policies",
+                            style: TextStyle(
+                                color: Color.fromRGBO(51, 51, 51, 1),
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.navigate_next))
+                      ],
+                    )),
+                  ),
+                ),
+                const Divider(height: 0.3),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
+                  child: SizedBox(
+                    height: 60,
+                    child: Center(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Center(
+                            child: Text(
+                              "More",
+                              style: TextStyle(
+                                  color: Color.fromRGBO(51, 51, 51, 1),
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          TextButton(
+                              onPressed: () {},
+                              child: const Text(
+                                "Agora.io",
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Color.fromRGBO(17, 78, 255, 1)),
+                              ))
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(height: 0.3),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  height: 32,
+                  color: const Color.fromRGBO(245, 245, 245, 1),
+                  child: Row(
+                    children: const [
+                      Text(
+                        "Logins",
+                        style: TextStyle(
+                          color: Color.fromRGBO(153, 153, 153, 1),
+                          fontWeight: FontWeight.w400,
+                          fontSize: 13,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
+                  child: SizedBox(
+                    height: 60,
+                    child: Center(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InkWell(
+                            onTap: _logout,
+                            child: const Center(
+                              child: Text(
+                                "Logout",
+                                style: TextStyle(
+                                  color: Color.fromRGBO(17, 78, 255, 1),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
+  }
+
+  void _logout() async {
+    ChatClient.getInstance.logout();
+    Navigator.of(context).popAndPushNamed("login");
   }
 
   void _showUpdateAvatarView() {
@@ -106,7 +266,7 @@ class _SettingsPageState extends State<SettingsPage> {
         return const ChoiceAvatarPage();
       },
     )).then((value) async {
-      if (value != -1) {
+      if (value != null && value > -1) {
         try {
           _userInfo = await ChatClient.getInstance.userInfoManager
               .updateUserInfo(avatarUrl: value.toString());

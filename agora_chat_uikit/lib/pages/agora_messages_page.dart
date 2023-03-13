@@ -1,11 +1,8 @@
 import 'dart:io';
 
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 
 class AgoraMessagesPage extends StatefulWidget {
   const AgoraMessagesPage({
@@ -110,7 +107,21 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
             widget.inputBar ??
                 AgoraMessageInputWidget(
                   msgListViewController: msgListViewController,
-                  onTextFieldFocus: () {},
+                  recordTouchDown: () {
+                    debugPrint("按下");
+                  },
+                  recordTouchUpInside: () {
+                    debugPrint("内部弹起");
+                  },
+                  recordTouchUpOutside: () {
+                    debugPrint("外部弹起");
+                  },
+                  recordDragInside: () {
+                    debugPrint("移入");
+                  },
+                  recordDragOutside: () {
+                    debugPrint("移出");
+                  },
                   moreAction: showMoreItems,
                   onTextFieldChanged: (text) {},
                   onSendBtnTap: (text) {
@@ -207,16 +218,24 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
   }
 
   void _takePhoto() async {
-    final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-    if (photo != null) {
-      _sendImage(photo.path);
+    try {
+      final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+      if (photo != null) {
+        _sendImage(photo.path);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 
   void _openImagePicker() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      _sendImage(image.path);
+    try {
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        _sendImage(image.path);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 

@@ -1,8 +1,5 @@
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:agora_chat_uikit/tools/agora_extension.dart';
+import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:flutter/material.dart';
-
-import 'agora_badge_widget.dart';
 
 class AgoraConversationListTile extends StatelessWidget {
   const AgoraConversationListTile(
@@ -24,7 +21,6 @@ class AgoraConversationListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      // key: ValueKey(conversation.id),
       future: conversation.latestMessage(),
       builder: (context, snapshot) {
         ChatMessage? msg;

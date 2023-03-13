@@ -1,6 +1,5 @@
 import 'package:agora_chat_demo/pages/contact_page/request_model.dart';
 import 'package:agora_chat_demo/tools/tool.dart';
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 
 import 'package:flutter/material.dart';
@@ -33,7 +32,7 @@ class _ContactsPageState extends State<ContactsPage>
   @override
   void initState() {
     super.initState();
-    _controller = TabController(length: 3, vsync: this);
+    _controller = TabController(length: 2, vsync: this);
     _controller.addListener(() {
       setState(() {});
     });
@@ -58,7 +57,7 @@ class _ContactsPageState extends State<ContactsPage>
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
           shadowColor: Theme.of(context).appBarShadowColor,
@@ -73,7 +72,7 @@ class _ContactsPageState extends State<ContactsPage>
             padding: EdgeInsets.zero,
             indicatorSize: TabBarIndicatorSize.tab,
             indicatorColor: const Color.fromRGBO(17, 78, 255, 1),
-            indicatorWeight: 3,
+            indicatorWeight: 2,
             indicatorPadding: const EdgeInsets.fromLTRB(60, 0, 60, 0),
             tabs: [
               Tab(
@@ -82,16 +81,6 @@ class _ContactsPageState extends State<ContactsPage>
                     child: Center(
                       child: Text("Contacts",
                           style: _controller.index == 0
-                              ? selectedStyle
-                              : unselectedStyle),
-                    )),
-              ),
-              Tab(
-                child: SizedBox(
-                    width: 100,
-                    child: Center(
-                      child: Text("Group",
-                          style: _controller.index == 1
                               ? selectedStyle
                               : unselectedStyle),
                     )),
@@ -123,7 +112,6 @@ class _ContactsPageState extends State<ContactsPage>
           controller: _controller,
           children: const [
             ContactsView(),
-            Icon(Icons.directions_boat),
             RequestsView(),
           ],
         ),

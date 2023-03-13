@@ -7,9 +7,11 @@ class AgoraMessageInputWidget extends StatefulWidget {
   const AgoraMessageInputWidget({
     super.key,
     this.inputTextStr,
-    this.recordStart,
-    this.recordCancel,
-    this.recordDone,
+    this.recordTouchDown,
+    this.recordTouchUpInside,
+    this.recordTouchUpOutside,
+    this.recordDragInside,
+    this.recordDragOutside,
     this.moreAction,
     this.enableEmoji = true,
     this.enableVoice = true,
@@ -21,9 +23,11 @@ class AgoraMessageInputWidget extends StatefulWidget {
     required this.msgListViewController,
   });
   final String? inputTextStr;
-  final VoidCallback? recordStart;
-  final VoidCallback? recordCancel;
-  final VoidCallback? recordDone;
+  final VoidCallback? recordTouchDown;
+  final VoidCallback? recordTouchUpInside;
+  final VoidCallback? recordTouchUpOutside;
+  final VoidCallback? recordDragInside;
+  final VoidCallback? recordDragOutside;
   final VoidCallback? moreAction;
   final void Function(String text)? onSendBtnTap;
   final void Function(String text)? onTextFieldChanged;

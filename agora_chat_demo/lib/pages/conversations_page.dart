@@ -1,3 +1,5 @@
+import 'package:agora_chat_demo/demo_default.dart';
+import 'package:agora_chat_demo/pages/contact_page/contact_search_page.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 
 import 'package:flutter/material.dart';
@@ -12,19 +14,14 @@ class ConversationsPage extends StatefulWidget {
 }
 
 class _ConversationsPageState extends State<ConversationsPage> {
-  final AgoraConversationListController conversationListController =
-      AgoraConversationListController();
-
+  final Map<String, ChatUserInfo?> _infoMap = {};
   @override
   void initState() {
     super.initState();
-    conversationListController.addTotalUnreadCountListener(unreadCountChange);
   }
 
   @override
   void dispose() {
-    conversationListController
-        .removeTotalUnreadCountListener(unreadCountChange);
     super.dispose();
   }
 
@@ -60,6 +57,35 @@ class _ConversationsPageState extends State<ConversationsPage> {
         ],
       ),
       body: AgoraConversationListView(
+        avatarBuilder: (context, conversation) {
+          if (conversation.type == ChatConversationType.Chat) {
+            ChatUserInfo? info = _judgmentUserInfoAndUpdate(conversation.id);
+            if (info == null) {
+              return AgoraImageLoader.defaultAvatar(size: 40);
+            } else {
+              return userInfoAvatar(info, size: 40);
+            }
+          }
+          return null;
+        },
+        nicknameBuilder: (context, conversation) {
+          if (conversation.type == ChatConversationType.Chat) {
+            ChatUserInfo? info = _judgmentUserInfoAndUpdate(conversation.id);
+            String showName = conversation.id;
+            if (info != null) {
+              showName = info.nickName ?? info.userId;
+            }
+            return Text(
+              showName,
+              style: const TextStyle(
+                color: Color.fromRGBO(51, 51, 51, 1),
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+            );
+          }
+          return null;
+        },
         onItemTap: (conversation) {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) {
@@ -76,17 +102,31 @@ class _ConversationsPageState extends State<ConversationsPage> {
   void showMenu() async {
     await AgoraBottomSheet(titleLabel: "Create", items: [
       AgoraBottomSheetItem(
-        "New Conversation",
-        onTap: () {},
-      ),
-      AgoraBottomSheetItem(
-        "Create a group",
-        onTap: () {},
-      ),
-      AgoraBottomSheetItem(
         "Add contact",
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).pop();
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) {
+              return const ContactSearchPage();
+            },
+          ));
+        },
       ),
     ]).show(context);
+  }
+
+  ChatUserInfo? _judgmentUserInfoAndUpdate(String userId) {
+    if (!_infoMap.keys.contains(userId)) {
+      _infoMap[userId] = null;
+      ChatClient.getInstance.userInfoManager
+          .fetchUserInfoById([userId]).then((value) {
+        _infoMap[userId] = value.entries.first.value;
+        setState(() {});
+      }).catchError((e) {
+        _infoMap.remove(userId);
+      });
+      return null;
+    }
+    return _infoMap[userId];
   }
 }

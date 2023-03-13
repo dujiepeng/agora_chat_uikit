@@ -1,4 +1,3 @@
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 
 import 'package:flutter/gestures.dart';
@@ -238,11 +237,11 @@ class AgoraConversationListViewState extends State<AgoraConversationListView> {
                         child: Container(
                           color: Colors.white,
                           child: AgoraConversationListTile(
-                            avatar: Container(
-                              width: 50,
-                              height: 50,
-                              color: Colors.red,
-                            ),
+                            avatar: widget.avatarBuilder
+                                    ?.call(context, conversation) ??
+                                AgoraImageLoader.defaultAvatar(size: 40),
+                            title: widget.nicknameBuilder
+                                ?.call(context, conversation),
                             conversation: conversation,
                             onTap: (conversation) {
                               if (widget.onItemTap != null) {

@@ -17,12 +17,11 @@ class AgoraImageLoader {
   }
 
   static Widget defaultAvatar({
-    double width = 30,
-    double height = 30,
+    double size = 30,
   }) {
     return Container(
-      width: width,
-      height: height,
+      width: size,
+      height: size,
       clipBehavior: Clip.hardEdge,
       decoration: const ShapeDecoration(
           shape: RoundedRectangleBorder(

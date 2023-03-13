@@ -1,4 +1,3 @@
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:agora_chat_uikit/controllers/agora_base_controller.dart';
 

@@ -43,7 +43,8 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Scaffold(
+
+    Widget content = Scaffold(
       body: SafeArea(
         child: IndexedStack(
           index: _currentIndex,
@@ -66,6 +67,10 @@ class _HomePageState extends State<HomePage>
         ],
       ),
     );
+
+    content = AgoraChatUIKit(child: content);
+
+    return content;
   }
 
   BottomNavigationBarItem getBarItem({

@@ -1,8 +1,6 @@
 import 'package:agora_chat_demo/tools/tool.dart';
 import 'package:flutter/material.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-
 import 'pages/home_page.dart';
 import 'pages/login_page.dart';
 import 'pages/register_page.dart';
@@ -27,7 +25,6 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      builder: (context, child) => AgoraChatUIKit(child: child!),
       home: FutureBuilder<bool>(
         future: ChatClient.getInstance.isLoginBefore(),
         builder: (context, snapshot) {

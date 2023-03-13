@@ -1,7 +1,6 @@
 import 'package:agora_chat_demo/demo_default.dart';
 import 'package:agora_chat_demo/pages/messages_page.dart';
 import 'package:agora_chat_demo/tools/tool.dart';
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +24,7 @@ class _ContactInfoState extends State<ContactInfo> {
 
   void _loadUserInfo() async {
     Map<String, ChatUserInfo> map = await ChatClient.getInstance.userInfoManager
-        .fetchUserInfoById([widget.userInfo.userId], expireTime: 1800);
+        .fetchUserInfoById([widget.userInfo.userId], expireTime: 0);
     if (map.isNotEmpty) {
       setState(() {
         _userInfo = map.values.first;
@@ -69,7 +68,7 @@ class _ContactInfoState extends State<ContactInfo> {
                   SizedBox(
                     width: 100,
                     height: 100,
-                    child: userInfoAvatar(_userInfo!),
+                    child: userInfoAvatar(_userInfo),
                   ),
                   const Divider(height: 12, color: Colors.transparent),
                   Text(

@@ -1,10 +1,9 @@
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:flutter/material.dart';
 
 import 'tools/image_loader.dart';
 
-Widget defaultAvatar = AgoraImageLoader.defaultAvatar(width: 40, height: 40);
+Widget defaultAvatar = AgoraImageLoader.defaultAvatar(size: 40);
 
 Widget userInfoAvatar(ChatUserInfo? info, {double size = 30}) {
   return Container(
