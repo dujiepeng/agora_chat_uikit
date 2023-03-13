@@ -293,17 +293,17 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
   }
 
   Widget _voiceWidget() {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: const Color.fromARGB(255, 230, 230, 230)),
-      height: 42,
-      key: _gestureKey,
-      child: Listener(
-        behavior: HitTestBehavior.opaque,
-        onPointerDown: _onPointerDown,
-        onPointerMove: _onPointerMove,
-        onPointerUp: _onPointerUp,
+    return Listener(
+      behavior: HitTestBehavior.opaque,
+      onPointerDown: _onPointerDown,
+      onPointerMove: _onPointerMove,
+      onPointerUp: _onPointerUp,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: const Color.fromARGB(255, 230, 230, 230)),
+        height: 42,
+        key: _gestureKey,
         child: Center(
           child: Text(
             () {
@@ -423,6 +423,7 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
 
   _onPointerDown(PointerDownEvent event) {
     setState(() => _voiceTouchType = _AgoraVoiceOffsetType.dragInside);
+    widget.recordTouchDown?.call();
   }
 
   _onPointerMove(PointerMoveEvent event) {
@@ -439,8 +440,10 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
     _AgoraVoiceOffsetType type = _AgoraVoiceOffsetType.noTouch;
     if (!outside) {
       type = _AgoraVoiceOffsetType.dragInside;
+      widget.recordDragInside?.call();
     } else {
       type = _AgoraVoiceOffsetType.dragOutside;
+      widget.recordDragOutside?.call();
     }
     if (_voiceTouchType != type) {
       setState(() => _voiceTouchType = type);
@@ -459,9 +462,13 @@ class _AgoraMessageInputWidgetState extends State<AgoraMessageInputWidget> {
       outside = true;
     }
 
-    if (!outside) {
-    } else {}
     setState(() => _voiceTouchType = _AgoraVoiceOffsetType.noTouch);
+
+    if (!outside) {
+      widget.recordTouchUpInside?.call();
+    } else {
+      widget.recordTouchUpOutside?.call();
+    }
   }
 }
 

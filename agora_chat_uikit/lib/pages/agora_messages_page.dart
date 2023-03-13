@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
@@ -39,7 +40,9 @@ class AgoraMessagesPage extends StatefulWidget {
 class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
   late final AgoraMessageListViewController msgListViewController;
   final ImagePicker _picker = ImagePicker();
-
+  final Record _audioRecorder = Record();
+  int _recordDuration = 0;
+  Timer? _timer;
   @override
   void initState() {
     super.initState();
@@ -107,21 +110,9 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
             widget.inputBar ??
                 AgoraMessageInputWidget(
                   msgListViewController: msgListViewController,
-                  recordTouchDown: () {
-                    debugPrint("按下");
-                  },
-                  recordTouchUpInside: () {
-                    debugPrint("内部弹起");
-                  },
-                  recordTouchUpOutside: () {
-                    debugPrint("外部弹起");
-                  },
-                  recordDragInside: () {
-                    debugPrint("移入");
-                  },
-                  recordDragOutside: () {
-                    debugPrint("移出");
-                  },
+                  recordTouchDown: _startRecord,
+                  recordTouchUpInside: _stopRecord,
+                  recordTouchUpOutside: _cancelRecord,
                   moreAction: showMoreItems,
                   onTextFieldChanged: (text) {},
                   onSendBtnTap: (text) {
@@ -264,6 +255,30 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
     }));
   }
 
+  void _sendVoice(String? path) {
+    if (path == null) {
+      return;
+    }
+    if (_recordDuration <= 1) {
+      return;
+    }
+
+    if (Platform.isIOS) {
+      if (path.startsWith("file:///")) {
+        path = path.substring(8);
+      }
+    }
+    String displayName = path.split("/").last;
+
+    ChatMessage msg = ChatMessage.createVoiceSendMessage(
+      targetId: widget.conversation.id,
+      filePath: path,
+      duration: _recordDuration,
+      displayName: displayName,
+    );
+    msgListViewController.sendMessage(msg);
+  }
+
   void _voiceBubblePressed(ChatMessage message) async {
     await widget.conversation.markMessageAsRead(message.msgId);
     message.hasRead = true;
@@ -282,5 +297,46 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
   void _stopVoice(ChatMessage message) {
     msgListViewController.stopPlay(message);
     msgListViewController.reloadData();
+  }
+
+  void _startRecord() async {
+    debugPrint("开始录制");
+    try {
+      if (await _audioRecorder.hasPermission()) {
+        final isSupported = await _audioRecorder.isEncoderSupported(
+          AudioEncoder.aacLc,
+        );
+        debugPrint('${AudioEncoder.aacLc.name} supported: $isSupported');
+
+        await _audioRecorder.start();
+        _recordDuration = 0;
+
+        _startTimer();
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  void _stopRecord() async {
+    _endTimer();
+    final path = await _audioRecorder.stop();
+    debugPrint("结束录制 $path");
+    _sendVoice(path);
+  }
+
+  void _cancelRecord() async {
+    _endTimer();
+    debugPrint("取消录制");
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
+      _recordDuration++;
+    });
+  }
+
+  void _endTimer() {
+    _timer?.cancel();
   }
 }

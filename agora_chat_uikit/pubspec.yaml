@@ -21,6 +21,8 @@ dependencies:
 
   file_picker: ^4.6.1
 
+  record: ^4.4.4
+
   common_utils: ^2.1.0
 
 dev_dependencies:

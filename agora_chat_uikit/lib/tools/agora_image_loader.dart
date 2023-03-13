@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 
 class AgoraImageLoader {
-  static Image loadImage(name,
-      {double? width, double? height, BoxFit fit = BoxFit.fill}) {
+  static Image loadImage(
+    name, {
+    double? width,
+    double? height,
+    BoxFit fit = BoxFit.fill,
+    Color? color,
+    double? scale,
+  }) {
     return Image.asset(
       "images/$name",
       width: width,
       height: height,
       fit: fit,
       package: "agora_chat_uikit",
+      color: color,
+      scale: scale,
     );
   }
 

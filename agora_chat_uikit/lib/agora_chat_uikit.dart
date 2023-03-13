@@ -3,6 +3,7 @@ library agora_chat_uikit;
 export 'package:agora_chat_sdk/agora_chat_sdk.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:file_picker/file_picker.dart';
+export 'package:record/record.dart';
 
 export 'agora_chat_uikit_theme.dart';
 export 'agora_chat_define.dart';
@@ -28,68 +29,4 @@ export 'widgets/agora_message_list_item/agora_message_list_image_item.dart';
 export 'widgets/agora_message_list_item/agora_message_list_file_item.dart';
 export 'widgets/agora_message_list_item/agora_message_list_voice_item.dart';
 
-import 'package:flutter/widgets.dart';
-import 'views/agora_conversation_list_view.dart';
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-
-class AgoraChatUIKitSettings {
-  AgoraChatUIKitSettings({
-    this.enableUserData = true,
-  });
-  final bool enableUserData;
-}
-
-class AgoraChatUIKit extends StatefulWidget {
-  const AgoraChatUIKit({
-    required this.child,
-    this.settings,
-    super.key,
-  });
-
-  final Widget child;
-  final AgoraChatUIKitSettings? settings;
-
-  @override
-  State<AgoraChatUIKit> createState() => AgoraChatUIKitState();
-
-  static AgoraChatUIKitState of(BuildContext context) {
-    AgoraChatUIKitState? state;
-    state = context.findAncestorStateOfType<AgoraChatUIKitState>();
-    assert(
-      state != null,
-      'You must have a AgoraChatUIKit widget at the top of you widget tree',
-    );
-
-    return state!;
-  }
-}
-
-class AgoraChatUIKitState extends State<AgoraChatUIKit> {
-  late final AgoraConversationListController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    assert(
-      ChatClient.getInstance.options != null,
-      'You must has init AgoraChat SDK.',
-    );
-    ChatClient.getInstance.startCallback();
-    _controller = AgoraConversationListController();
-  }
-
-  AgoraConversationListController get conversationListController {
-    return _controller;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.child;
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-}
+export 'widgets/agora_chat_uikit.dart';

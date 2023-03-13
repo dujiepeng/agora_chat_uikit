@@ -8,6 +8,7 @@ import 'pages/register_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   var options = ChatOptions(appKey: "easemob-demo#flutter", debugModel: true);
+  // var options = ChatOptions(appKey: "easemob-demo#wang", debugModel: true);
   await ChatClient.getInstance.init(options);
   await DemoDataStore.shared.init();
   runApp(const MyApp());
