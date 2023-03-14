@@ -63,24 +63,6 @@ class _MessagePageState extends State<MessagePage> {
           return userInfoAvatar(info);
         }
       },
-      // nicknameBuilder: (ctx, userId) {
-      //   ChatUserInfo? info = _judgmentUserInfoAndUpdate(userId);
-      //   String showName = userId;
-      //   if (info != null) {
-      //     showName = info.nickName ?? info.userId;
-      //   }
-      //   return SizedBox(
-      //     height: 20,
-      //     child: Text(
-      //       showName,
-      //       style: const TextStyle(
-      //         color: Color.fromRGBO(165, 167, 166, 1),
-      //         fontWeight: FontWeight.w400,
-      //         fontSize: 12,
-      //       ),
-      //     ),
-      //   );
-      // },
     );
   }
 }

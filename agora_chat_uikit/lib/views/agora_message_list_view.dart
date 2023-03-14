@@ -266,7 +266,6 @@ class AgoraMessageListViewController extends AgoraBaseController {
     return _reloadData?.call();
   }
 
-  //
   void play(ChatMessage message) {
     playingMessage = message;
   }

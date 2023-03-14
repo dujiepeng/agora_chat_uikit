@@ -23,6 +23,8 @@ dependencies:
 
   record: ^4.4.4
 
+  audioplayers: ^3.0.1
+
   common_utils: ^2.1.0
 
 dev_dependencies:

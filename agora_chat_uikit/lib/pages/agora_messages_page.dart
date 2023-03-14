@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -41,6 +42,7 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
   late final AgoraMessageListViewController msgListViewController;
   final ImagePicker _picker = ImagePicker();
   final Record _audioRecorder = Record();
+  final AudioPlayer _player = AudioPlayer();
   int _recordDuration = 0;
   Timer? _timer;
   @override
@@ -54,6 +56,8 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
 
   @override
   void dispose() {
+    _audioRecorder.dispose();
+    _player.dispose();
     msgListViewController.dispose();
     super.dispose();
   }
@@ -92,18 +96,20 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
                 messageListViewController: msgListViewController,
                 avatarBuilder: widget.avatarBuilder,
                 nicknameBuilder: widget.nicknameBuilder,
-                onTap: (context, message) {
-                  if (message.body.type == MessageType.VOICE) {
-                    _voiceBubblePressed(message);
+                onTap: (context, message) async {
+                  if (widget.onTap?.call(context, message) == null) {
+                    if (message.body.type == MessageType.VOICE) {
+                      _voiceBubblePressed(message);
+                    }
                   }
-                  return;
                 },
-                onBubbleDoubleTap: (context, message) {
-                  debugPrint("message double tap");
-                  return;
+                onBubbleDoubleTap: (context, message) async {
+                  return await widget.onBubbleDoubleTap?.call(context, message);
                 },
                 onBubbleLongPress: (ctx, msg) async {
-                  await longPressAction.call(msg);
+                  if (widget.onTap?.call(ctx, msg) == null) {
+                    return await longPressAction.call(msg);
+                  }
                 },
               ),
             ),
@@ -292,9 +298,16 @@ class _AgoraMessagesPageState extends State<AgoraMessagesPage> {
   void _playVoice(ChatMessage message) {
     msgListViewController.play(message);
     msgListViewController.reloadData();
+    ChatVoiceMessageBody body = message.body as ChatVoiceMessageBody;
+    _player.stop();
+    _player.play(DeviceFileSource(body.localPath));
+    _player.onPlayerComplete.first.whenComplete(() {
+      _stopVoice(message);
+    });
   }
 
   void _stopVoice(ChatMessage message) {
+    _player.stop();
     msgListViewController.stopPlay(message);
     msgListViewController.reloadData();
   }
