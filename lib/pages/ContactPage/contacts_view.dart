@@ -1,4 +1,5 @@
 import 'package:agora_chat_demo/demo_default.dart';
+import 'package:agora_chat_demo/tools/user_info_manager.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 
 import 'package:flutter/material.dart';
@@ -38,10 +39,8 @@ class _ContactsViewState extends State<ContactsView>
     try {
       List<String> list = await ChatClient.getInstance.contactManager
           .getAllContactsFromServer();
-
-      Map<String, ChatUserInfo> userMap = await ChatClient
-          .getInstance.userInfoManager
-          .fetchUserInfoById(list, expireTime: 3600);
+      Map<String, ChatUserInfo> userMap =
+          await UserInfoManager.getUserInfoList(list);
 
       userInfos.clear();
       userInfos.addAll(userMap.values);

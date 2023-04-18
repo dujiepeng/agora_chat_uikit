@@ -61,8 +61,8 @@ class _ContactsPageState extends State<ContactsPage>
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          shadowColor: Theme.of(context).appBarShadowColor,
-          backgroundColor: Theme.of(context).appBarBackgroundColor,
+          shadowColor: Colors.white,
+          backgroundColor: Colors.white,
           title: const Text('Contacts',
               style: TextStyle(
                   fontSize: 25,

@@ -5,11 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class MessagePage extends StatefulWidget {
-  const MessagePage(
-      {super.key, required this.conversation, this.messagesListController});
+  const MessagePage({
+    super.key,
+    required this.conversation,
+    this.userInfo,
+  });
 
   final ChatConversation conversation;
-  final AgoraMessageListController? messagesListController;
+  final ChatUserInfo? userInfo;
 
   @override
   State<MessagePage> createState() => _MessagePageState();
@@ -44,22 +47,28 @@ class _MessagePageState extends State<MessagePage> {
 
   @override
   Widget build(BuildContext context) {
+    String showName = widget.userInfo?.nickName ?? "";
+    if (showName.isEmpty) showName = widget.conversation.id;
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
+        centerTitle: false,
         titleSpacing: 0,
-        iconTheme: IconThemeData(
-          color: Theme.of(context).appBarBackIconColor,
+        iconTheme: const IconThemeData(
+          color: Colors.black,
         ),
-        shadowColor: Theme.of(context).appBarShadowColor,
-        backgroundColor: Theme.of(context).appBarBackgroundColor,
+        shadowColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
         title: Row(
           children: [
-            AgoraImageLoader.defaultAvatar(),
+            userInfoAvatar(widget.userInfo),
             const SizedBox(width: 10),
             Text(
-              widget.conversation.id,
-              style: Theme.of(context).appBarTitleTextStyle,
+              showName,
+              style: const TextStyle(
+                color: Color.fromRGBO(51, 51, 51, 1),
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+              ),
             ),
           ],
         ),
@@ -67,25 +76,19 @@ class _MessagePageState extends State<MessagePage> {
       body: SafeArea(
         child: AgoraMessagesView(
           conversation: widget.conversation,
-          titleAvatarBuilder: (context, conversation) {
-            if (conversation.type == ChatConversationType.Chat) {
-              ChatUserInfo? info = _judgmentUserInfoAndUpdate(conversation.id);
-              if (info == null) {
-                return AgoraImageLoader.defaultAvatar();
-              } else {
-                return userInfoAvatar(info);
-              }
-            }
-            return null;
+          nicknameBuilder: (context, userId) {
+            ChatUserInfo? info = _judgmentUserInfoAndUpdate(userId);
+            String? nickname = info?.nickName;
+            return Text(nickname ?? userId);
           },
-          // avatarBuilder: (context, userId) {
-          //   ChatUserInfo? info = _judgmentUserInfoAndUpdate(userId);
-          //   if (info == null) {
-          //     return AgoraImageLoader.defaultAvatar();
-          //   } else {
-          //     return userInfoAvatar(info);
-          //   }
-          // },
+          avatarBuilder: (context, userId) {
+            ChatUserInfo? info = _judgmentUserInfoAndUpdate(userId);
+            if (info == null) {
+              return AgoraImageLoader.defaultAvatar();
+            } else {
+              return userInfoAvatar(info);
+            }
+          },
           onTap: (ctx, message) {
             if (message.body.type == MessageType.IMAGE) {
               Navigator.of(context).push(MaterialPageRoute(
@@ -100,7 +103,7 @@ class _MessagePageState extends State<MessagePage> {
           onBubbleDoubleTap: (context, message) {
             return false;
           },
-          onBubbleLongPress: (context, message) async {
+          onBubbleLongPress: (context, message) {
             return false;
           },
         ),

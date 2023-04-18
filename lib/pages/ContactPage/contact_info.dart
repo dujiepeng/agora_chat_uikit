@@ -1,5 +1,6 @@
 import 'package:agora_chat_demo/demo_default.dart';
 import 'package:agora_chat_demo/pages/ConversationPage/MessagesPage/messages_page.dart';
+import 'package:agora_chat_demo/tools/user_info_manager.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -93,7 +94,10 @@ class _ContactInfoState extends State<ContactInfo> {
                           .then((value) {
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) {
-                            return MessagePage(conversation: value!);
+                            return MessagePage(
+                              conversation: value!,
+                              userInfo: widget.userInfo,
+                            );
                           },
                         )).then((value) {
                           AgoraChatUIKit.of(context)
@@ -159,10 +163,14 @@ class _ContactInfoState extends State<ContactInfo> {
                 onTap: () {
                   AgoraDialog(
                     titleLabel: showName,
-                    content: Text(
-                      "Delete this contact and associated Chats.",
+                    content: const Text(
+                      "Delete this contact.",
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).agoraDialogContentDefaultStyle,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
                     ),
                     items: [
                       AgoraDialogItem(

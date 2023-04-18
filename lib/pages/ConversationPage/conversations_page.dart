@@ -1,5 +1,6 @@
 import 'package:agora_chat_demo/demo_default.dart';
 import 'package:agora_chat_demo/pages/ContactPage/contact_search_page.dart';
+import 'package:agora_chat_demo/tools/user_info_manager.dart';
 import 'package:agora_chat_uikit/agora_chat_uikit.dart';
 
 import 'package:flutter/material.dart';
@@ -14,7 +15,6 @@ class ConversationsPage extends StatefulWidget {
 }
 
 class _ConversationsPageState extends State<ConversationsPage> {
-  final Map<String, ChatUserInfo?> _infoMap = {};
   @override
   void initState() {
     super.initState();
@@ -40,8 +40,8 @@ class _ConversationsPageState extends State<ConversationsPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        shadowColor: Theme.of(context).appBarShadowColor,
-        backgroundColor: Theme.of(context).appBarBackgroundColor,
+        shadowColor: Colors.white,
+        backgroundColor: Colors.white,
         title: const Text('Chats',
             style: TextStyle(
                 fontSize: 25,
@@ -60,18 +60,16 @@ class _ConversationsPageState extends State<ConversationsPage> {
       body: AgoraConversationsView(
         avatarBuilder: (context, conversation) {
           if (conversation.type == ChatConversationType.Chat) {
-            ChatUserInfo? info = _judgmentUserInfoAndUpdate(conversation.id);
-            if (info == null) {
-              return AgoraImageLoader.defaultAvatar(size: 40);
-            } else {
-              return userInfoAvatar(info, size: 40);
-            }
+            ChatUserInfo? info = UserInfoManager.getUserInfo(
+                conversation.id, () => setState(() {}));
+            return userInfoAvatar(info, size: 40);
           }
           return null;
         },
         nicknameBuilder: (context, conversation) {
           if (conversation.type == ChatConversationType.Chat) {
-            ChatUserInfo? info = _judgmentUserInfoAndUpdate(conversation.id);
+            ChatUserInfo? info = UserInfoManager.getUserInfo(
+                conversation.id, () => setState(() {}));
             String showName = info?.nickName ?? "";
             if (showName.isEmpty) {
               showName = conversation.id;
@@ -88,9 +86,14 @@ class _ConversationsPageState extends State<ConversationsPage> {
           return null;
         },
         onItemTap: (conversation) {
+          ChatUserInfo? info = UserInfoManager.getUserInfo(
+              conversation.id, () => setState(() {}));
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) {
-              return MessagePage(conversation: conversation);
+              return MessagePage(
+                conversation: conversation,
+                userInfo: info,
+              );
             },
           )).then((value) async {
             await AgoraChatUIKit.of(context)
@@ -116,20 +119,5 @@ class _ConversationsPageState extends State<ConversationsPage> {
         },
       ),
     ]).show(context);
-  }
-
-  ChatUserInfo? _judgmentUserInfoAndUpdate(String userId) {
-    if (!_infoMap.keys.contains(userId)) {
-      _infoMap[userId] = null;
-      ChatClient.getInstance.userInfoManager
-          .fetchUserInfoById([userId]).then((value) {
-        _infoMap[userId] = value.entries.first.value;
-        setState(() {});
-      }).catchError((e) {
-        _infoMap.remove(userId);
-      });
-      return null;
-    }
-    return _infoMap[userId];
   }
 }

@@ -38,9 +38,9 @@ class _ContactSearchPageState extends State<ContactSearchPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        shadowColor: Theme.of(context).appBarShadowColor,
-        backgroundColor: Theme.of(context).appBarBackgroundColor,
-        leadingWidth: 30,
+        shadowColor: Colors.white,
+        backgroundColor: Colors.white,
+        titleSpacing: 0,
         title: SizedBox(
           height: 40,
           child: Row(
@@ -49,7 +49,6 @@ class _ContactSearchPageState extends State<ContactSearchPage> {
               Expanded(
                 child: TextField(
                   textInputAction: TextInputAction.search,
-                  // autofocus: true,
                   controller: _controller,
                   cursorColor: Colors.blue,
                   onSubmitted: (value) {
@@ -101,17 +100,24 @@ class _ContactSearchPageState extends State<ContactSearchPage> {
                   "Cancel",
                   style: TextStyle(color: Colors.black),
                 ),
-              )
+              ),
+              const SizedBox(
+                width: 10,
+              ),
             ],
           ),
         ),
-        leading: IconButton(
-            icon: const Icon(
+        leading: SizedBox(
+          width: 50,
+          child: InkWell(
+            child: const Icon(
               Icons.navigate_before,
               color: Color.fromRGBO(51, 51, 51, 1),
               size: 40,
             ),
-            onPressed: () => Navigator.of(context).pop()),
+            onTap: () => Navigator.of(context).pop(),
+          ),
+        ),
       ),
       body: infoList.isEmpty
           ? Center(
